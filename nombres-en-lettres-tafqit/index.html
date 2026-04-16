@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convertisseur de Nombres en Lettres Arabes (تفقيط)</title>
+    <meta name="description" content="Convertissez vos nombres en toutes lettres en arabe (Tafqit - التفقيط). Idéal pour remplir des chèques, des factures et des contrats juridiques. Gratuit.">
+    <meta name="keywords" content="nombres en lettres arabe, tafqit, تفقيط الارقام, convertisseur chiffre en lettre arabe, ecrire montant cheque arabe, facturation arabe, nombres arabes">
+    <meta name="author" content="Clavier Arabe">
+    <link rel="canonical" href="https://clavier-arabe.github.io/nombres-en-lettres-tafqit/">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://clavier-arabe.github.io/nombres-en-lettres-tafqit/">
+    <meta property="og:title" content="Outil de Tafqit (Nombres en Lettres Arabes)">
+    <meta property="og:description" content="Rédigez le montant de vos chèques et factures en arabe littéral sans faute de grammaire.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .tool-header h1 { font-size: 1.8rem; color: #111827; margin-bottom: 8px; }
+        .tool-header p { color: var(--text-muted); font-size: 1rem; margin-bottom: 25px; }
+        
+        .tool-actions {
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 15px; padding-top: 10px; border-top: 1px solid #e5e7eb;
+        }
+
+        /* Panneau d'options de devises */
+        .options-panel {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-grow: 1;
+            min-width: 200px;
+        }
+        
+        .input-group label {
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.95rem;
+            white-space: nowrap;
+        }
+        
+        .select-currency {
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            outline: none;
+            background: white;
+            cursor: pointer;
+            flex-grow: 1;
+        }
+        .select-currency:focus { border-color: var(--primary); }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            color: #374151;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+        }
+        .checkbox-label input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--primary); cursor: pointer; }
+
+        /* Champs de saisie numériques spécifiques */
+        .number-input-wrapper {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .number-input {
+            flex: 1;
+            padding: 15px;
+            font-size: 24px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: 0.3s;
+            background: #fdfdfd;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .number-input:focus { border-color: var(--primary); }
+        
+        /* Suppression des flèches du champ number */
+        .number-input::-webkit-outer-spin-button, .number-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .number-input[type=number] { -moz-appearance: textfield; }
+
+        /* Boîte de résultat */
+        .result-box {
+            width: 100%; min-height: 120px; padding: 20px; font-size: 32px; border: 2px solid #e5e7eb; 
+            border-radius: 8px; font-family: 'Amiri', serif; direction: rtl; 
+            background: #eff6ff; color: var(--primary); font-weight: 700;
+            display: flex; align-items: center; justify-content: center; text-align: center;
+            word-break: break-word; line-height: 1.4;
+        }
+
+        .content-section a:hover {
+            border-color: var(--primary) !important;
+            background: #eff6ff !important;
+            color: var(--primary) !important;
+            text-decoration: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .options-panel { flex-direction: column; align-items: stretch; }
+            .number-input { font-size: 20px; padding: 12px; }
+            .result-box { font-size: 24px; min-height: 100px; padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="full-width-header">
+        <div class="container">
+            <div class="grid-layout">
+                <div class="header-spacer"></div>
+                <div class="header-inner">
+                    <a href="/" class="logo"><span>Clavier Arabe</span> <span class="tiny"><i class="fa-solid fa-keyboard"></i></span></a>
+                    <a href="/" class="btn"><i class="fa-solid fa-keyboard"></i> Retour au Clavier</a>
+                </div>
+                <div class="header-spacer"></div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-content-area">
+        <div class="container">
+            <div class="grid-layout">
+                
+                <!-- Pub Gauche -->
+                <aside class="ad-sidebar left-ad"></aside>
+
+                <main class="main-panel">
+                    
+                    <!-- L'Outil -->
+                    <div class="boxed-section editor-card">
+                        <div class="tool-header">
+                            <h1>Convertisseur de Nombres en Lettres Arabes (Tafqit)</h1>
+                            <p>Saisissez un chiffre ou un montant. L'outil génère instantanément la phrase en arabe, parfaitement orthographiée, prête pour vos chèques et contrats.</p>
+                        </div>
+
+                        <!-- Saisie du numéro -->
+                        <div class="number-input-wrapper">
+                            <input type="number" id="numberInput" class="number-input" placeholder="Ex: 15400" min="0" max="999999999999999" oninput="convertNumber()" autofocus>
+                        </div>
+
+                        <!-- Options de Tafqit -->
+                        <div class="options-panel">
+                            <div class="input-group">
+                                <label for="currency">Devise:</label>
+                                <select id="currency" class="select-currency" onchange="convertNumber()">
+                                    <option value="none">Sans devise (Nombres purs)</option>
+                                    <option value="euro">Euro (يورو)</option>
+                                    <option value="dollar">Dollar US (دولار أمريكي)</option>
+                                    <option value="mad">Dirham Marocain (درهم مغربي)</option>
+                                    <option value="dzd">Dinar Algérien (دينار جزائري)</option>
+                                    <option value="tnd">Dinar Tunisien (دينار تونسي)</option>
+                                    <option value="aed">Dirham Émirati (درهم إماراتي)</option>
+                                    <option value="sar">Riyal Saoudien (ريال سعودي)</option>
+                                    <option value="qar">Riyal Qatari (ريال قطري)</option>
+                                    <option value="egp">Livre Égyptienne (جنيه مصري)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Résultat -->
+                        <div id="outputBox" class="result-box">
+                            ...
+                        </div>
+                        
+                        <div class="tool-actions" style="margin-top: 20px;">
+                            <div class="toolbar-group">
+                                <button class="btn btn-primary" onclick="copyResult()">
+                                    <i class="fa-regular fa-copy"></i> Copier le montant
+                                </button>
+                            </div>
+                            <div class="toolbar-group">
+                                <button class="btn btn-danger" onclick="clearInput()">
+                                    <i class="fa-solid fa-trash-can"></i> Effacer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contenu SEO de l'Outil -->
+                    <article class="boxed-section content-section">
+                        <h2>Le Tafqit (التفقيط): Qu'est-ce que c'est?</h2>
+                        <p>Dans le monde arabe et la finance islamique, le terme <strong>"Tafqit" (التفقيط)</strong> désigne le processus de conversion des chiffres numériques en mots écrits en toutes lettres. C'est une procédure obligatoire pour sécuriser les transactions financières et administratives.</p>
+
+                        <h3>1. Éviter la Fraude (Chèques et Factures)</h3>
+                        <p>Il est extrêmement facile de falsifier un chèque bancaire ou un contrat en ajoutant simplement un "zéro" à la fin d'un chiffre (passant de `1 000` à `10 000`). Rédiger le montant en toutes lettres en langue arabe rend cette fraude impossible. Si vous écrivez "ألف درهم" (Mille Dirhams), un faussaire ne pourra pas le transformer en "Dix mille" sans effacer toute la ligne.</p>
+
+                        <h3>2. Pourquoi utiliser un convertisseur automatique?</h3>
+                        <p>La grammaire arabe des nombres (<em>'Adad wa Ma'dud</em> - العدد والمعدود) est réputée comme étant l'une des plus complexes au monde. Elle impose:</p>
+                        <ul>
+                            <li>Des accords stricts de genre (masculin/féminin) entre le nombre et la devise.</li>
+                            <li>Des exceptions singulières et plurielles selon la dizaine (ex: les nombres de 11 à 99 requièrent un nom au singulier indéfini).</li>
+                            <li>L'utilisation de conjonctions de coordination "Wa" (و) entre les centaines, les dizaines et les unités.</li>
+                        </ul>
+                        <p>Notre algorithme de <strong>Tafqit gratuit</strong> connaît toutes ces règles mathématiques et linguistiques sur le bout des doigts, jusqu'à 999 Trillions (Milliards de Milliards).</p>
+
+                        <h3>3. L'importance de la mention "Faqat La Ghayr" (فقط لا غير)</h3>
+                        <p>Vous remarquerez que notre outil coche par défaut l'option "Ajouter <em>Faqat</em> à la fin". Dans le droit commercial des pays arabes (Maroc, Algérie, Égypte, Arabie Saoudite, etc.), il est impératif de clôturer un montant financier par les termes "<strong>فقط لا غير</strong>" (Uniquement et rien d'autre). Cela indique légalement la fin de la phrase et empêche physiquement quiconque de rajouter un mot à la suite du montant sur le papier.</p>
+
+                        <h3>Comment utiliser l'outil pour la comptabilité?</h3>
+                        <p>Sélectionnez votre devise locale (Euro, Dollar, Dirham, Dinar, Riyal, etc.) dans le menu déroulant. Saisissez votre chiffre dans le grand encadré blanc (les virgules et décimales ne sont pas encore prises en charge, veuillez arrondir vos valeurs ou séparer la saisie). Le texte calligraphié apparaîtra en bleu en temps réel. Cliquez sur le bouton "Copier" pour le coller directement dans votre logiciel de facturation, votre document Word ou votre fichier Excel.</p>
+                        <div style="margin-top: 40px; padding-top: 25px; border-top: 2px dashed #e5e7eb;">
+                            <h3 style="font-size: 1.4rem; color: #111827; margin-bottom: 15px; margin-top: 0;">Découvrez nos outils gratuits pour l'Arabe</h3>
+                            <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 20px;">Simplifiez votre rédaction, votre apprentissage ou votre développement informatique grâce à notre suite d'outils spécialisés:</p>
+                            
+                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px;">
+                                
+                                <!-- Outils Principaux -->
+                                <a href="/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-keyboard" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Arabe Virtuel
+                                </a>
+                                <a href="/clavier-persan-farsi/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-language" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Persan & Ourdou
+                                </a>
+                                <a href="/clavier-maghrebin-darija/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-earth-africa" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Maghrébin (Darija)
+                                </a>
+                                
+                                <!-- Outils de Manipulation de Texte -->
+                                <a href="/suppresseur-harakat/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-eraser" style="color: var(--primary); width: 20px; text-align: center;"></i> Suppresseur de Harakat
+                                </a>
+                                <a href="/nettoyeur-texte/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-broom" style="color: var(--primary); width: 20px; text-align: center;"></i> Nettoyeur de Texte
+                                </a>
+                                <a href="/allongement-tatweel/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-text-width" style="color: var(--primary); width: 20px; text-align: center;"></i> Étirer Texte (Tatweel)
+                                </a>
+                                <a href="/convertisseur-ponctuation-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-question" style="color: var(--primary); width: 20px; text-align: center;"></i> Inverser la Ponctuation
+                                </a>
+                                <a href="/chercher-remplacer-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-magnifying-glass-arrow-right" style="color: var(--primary); width: 20px; text-align: center;"></i> Chercher/Remplacer (Tolérant)
+                                </a>
+                                <a href="/reparateur-texte-photoshop/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--primary); width: 20px; text-align: center;"></i> Réparateur Photoshop/Adobe
+                                </a>
+                                
+                                <!-- Outils de Données, Nombres et Programmation -->
+                                <a href="/convertisseur-chiffres-arabes/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-1" style="color: var(--primary); width: 20px; text-align: center;"></i> Chiffres (Orientaux ↔ Européens)
+                                </a>
+                                <a href="/nombres-en-lettres-tafqit/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-money-check-dollar" style="color: var(--primary); width: 20px; text-align: center;"></i> Chiffres en Lettres (Tafqit)
+                                </a>
+                                <a href="/compteur-mots-caracteres/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-calculator" style="color: var(--primary); width: 20px; text-align: center;"></i> Compteur de Mots
+                                </a>
+                                <a href="/trieur-alphabetique/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-arrow-down-a-z" style="color: var(--primary); width: 20px; text-align: center;"></i> Trieur Alphabétique Arabe
+                                </a>
+                                <a href="/analyseur-frequence-mots-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-chart-simple" style="color: var(--primary); width: 20px; text-align: center;"></i> Analyseur de Densité (SEO)
+                                </a>
+                                <a href="/extracteur-texte/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-filter" style="color: var(--primary); width: 20px; text-align: center;"></i> Extracteur de Texte Arabe
+                                </a>
+                                <a href="/encodeur-decodeur-url-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-link" style="color: var(--primary); width: 20px; text-align: center;"></i> Décodeur d'URL Arabe
+                                </a>
+                                <a href="/generateur-lorem-ipsum-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-paragraph" style="color: var(--primary); width: 20px; text-align: center;"></i> Générateur Lorem Ipsum
+                                </a>
+
+                                <!-- Outils Divers et Accessibilité -->
+                                <a href="/lecteur-texte-arabe-vocal/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-volume-high" style="color: var(--primary); width: 20px; text-align: center;"></i> Lecteur Vocal (TTS)
+                                </a>
+                                <a href="/convertisseur-arabe-braille/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-braille" style="color: var(--primary); width: 20px; text-align: center;"></i> Traducteur Arabe ➔ Braille
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                </main>
+
+                <!-- Pub Droite -->
+                <aside class="ad-sidebar right-ad"></aside>
+
+            </div>
+        </div>
+    </div>
+
+    <footer class="full-width-footer">
+        <div class="container">
+            <div class="grid-layout">
+                <div class="footer-spacer"></div>
+                <div class="footer-inner">
+                    <div class="footer-links">
+                        <a href="/privacy/">Politique de Confidentialité</a>
+                        <a href="/cookies/">Politique des Cookies</a>
+                        <a href="/terms/">Conditions d'Utilisation</a>
+                        <a href="/contact/">Contact</a>
+                    </div>
+                    <div>&copy; 2026 Clavier Arabe. Tous droits réservés.</div>
+                </div>
+                <div class="footer-spacer"></div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast">Action réussie !</div>
+
+    <!-- SCRIPT TAFQIT (NOMBRES EN LETTRES) -->
+    <script>
+        // Dictionnaires Arabes pour Tafqit
+        const units = ["", "واحد", "اثنان", "ثلاثة", "أربعة", "خمسة", "ستة", "سبعة", "ثمانية", "تسعة"];
+        const tens11_19 = ["عشرة", "أحد عشر", "اثنا عشر", "ثلاثة عشر", "أربعة عشر", "خمسة عشر", "ستة عشر", "سبعة عشر", "ثمانية عشر", "تسعة عشر"];
+        const tens = ["", "عشرة", "عشرون", "ثلاثون", "أربعون", "خمسون", "ستون", "سبعون", "ثمانون", "تسعون"];
+        const hundreds = ["", "مائة", "مائتان", "ثلاثمائة", "أربعمائة", "خمسمائة", "ستمائة", "سبعمائة", "ثمانمائة", "تسعمائة"];
+        
+        // Ordres de grandeurs (Singulier, Pluriel de 3 à 10, Pluriel à partir de 11)
+        const scales = [
+            ["", "", ""],
+            ["ألف", "آلاف", "ألفاً"],
+            ["مليون", "ملايين", "مليوناً"],
+            ["مليار", "مليارات", "ملياراً"],
+            ["تريليون", "تريليونات", "تريليوناً"]
+        ];
+
+        // Devises (Mapping pour l'affichage)
+        const currencies = {
+            "none": "",
+            "euro": "يورو",
+            "dollar": "دولار أمريكي",
+            "mad": "درهم مغربي",
+            "dzd": "دينار جزائري",
+            "tnd": "دينار تونسي",
+            "aed": "درهم إماراتي",
+            "sar": "ريال سعودي",
+            "qar": "ريال قطري",
+            "egp": "جنيه مصري"
+        };
+
+        function numberToArabicWords(number) {
+            if (number === 0) return "صفر";
+            
+            let numStr = number.toString();
+            // Compléter avec des zéros devant pour avoir des blocs de 3 (centaines, dizaines, unités)
+            while (numStr.length % 3 !== 0) {
+                numStr = "0" + numStr;
+            }
+
+            let wordGroups = [];
+            let scaleIndex = numStr.length / 3 - 1; // 0: unités, 1: milliers, 2: millions, etc.
+
+            for (let i = 0; i < numStr.length; i += 3) {
+                let h = parseInt(numStr[i]);     // Centaines
+                let t = parseInt(numStr[i+1]);   // Dizaines
+                let u = parseInt(numStr[i+2]);   // Unités
+                let blockValue = h * 100 + t * 10 + u;
+
+                if (blockValue > 0) {
+                    let blockWords = [];
+
+                    // Traitement des Centaines
+                    if (h > 0) {
+                        blockWords.push(hundreds[h]);
+                    }
+
+                    // Traitement des Unités et Dizaines combinées (règle arabe: on lit l'unité AVANT la dizaine)
+                    let tuValue = t * 10 + u;
+                    if (tuValue > 0) {
+                        if (tuValue === 1 && scaleIndex > 0 && h === 0) {
+                            // "un mille" ou "un million" (l'unité 1 s'efface devant le mot millier)
+                        } 
+                        else if (tuValue === 2 && scaleIndex > 0 && h === 0) {
+                            // "deux milles" (dual form: ألفان, مليونان)
+                        } 
+                        else if (tuValue < 10) {
+                            blockWords.push(units[u]);
+                        } 
+                        else if (tuValue >= 11 && tuValue <= 19) {
+                            blockWords.push(tens11_19[u]);
+                        } 
+                        else if (tuValue >= 20) {
+                            // Cas 21, 35, etc. (Unité + "Wa" + Dizaine)
+                            if (u > 0) {
+                                blockWords.push(units[u] + " و" + tens[t]);
+                            } else {
+                                blockWords.push(tens[t]);
+                            }
+                        }
+                    }
+
+                    // Jointure interne au bloc (Centaines "Wa" Reste)
+                    let blockStr = blockWords.join(" و");
+
+                    // Traitement de l'ordre de grandeur (Milliers, Millions, etc.)
+                    let scaleWord = "";
+                    if (scaleIndex > 0) {
+                        if (blockValue === 1) {
+                            scaleWord = scales[scaleIndex][0]; // ألف
+                            blockStr = ""; // On n'écrit pas "Un Mille", mais juste "Mille"
+                        } else if (blockValue === 2) {
+                            // Règle du duel arabe (Al Muthanna)
+                            if (scaleIndex === 1) scaleWord = "ألفان";
+                            else if (scaleIndex === 2) scaleWord = "مليونان";
+                            else if (scaleIndex === 3) scaleWord = "ملياران";
+                            else if (scaleIndex === 4) scaleWord = "تريليونان";
+                            blockStr = "";
+                        } else if (blockValue >= 3 && blockValue <= 10) {
+                            scaleWord = scales[scaleIndex][1]; // آلاف
+                        } else {
+                            scaleWord = scales[scaleIndex][2]; // ألفاً
+                        }
+                    }
+
+                    // Ajouter le nom de l'échelle au bloc
+                    if (scaleWord !== "") {
+                        if (blockStr !== "") {
+                            wordGroups.push(blockStr + " " + scaleWord);
+                        } else {
+                            wordGroups.push(scaleWord);
+                        }
+                    } else {
+                        wordGroups.push(blockStr);
+                    }
+                }
+                scaleIndex--;
+            }
+
+            // Joindre tous les blocs (Millions "Wa" Milliers "Wa" Unités)
+            return wordGroups.join(" و");
+        }
+
+        function convertNumber() {
+            const inputVal = document.getElementById('numberInput').value;
+            const outputBox = document.getElementById('outputBox');
+            const currencyVal = document.getElementById('currency').value;
+
+            if (inputVal === "" || inputVal < 0) {
+                outputBox.innerText = "...";
+                return;
+            }
+
+            // Extraction partie entière (Les décimales ne sont pas supportées dans ce script basique)
+            const number = Math.floor(parseFloat(inputVal));
+            
+            if (number > 999999999999999) {
+                outputBox.innerText = "Chiffre trop grand !";
+                return;
+            }
+
+            let result = numberToArabicWords(number);
+
+            // Gestion de l'affichage final (Devise et Faqat)
+            let currencyStr = currencies[currencyVal];
+            
+            // Re-grammaticaliser la devise si nécessaire (Si le nombre finit par 1 ou 2, pas besoin d'accord complexe, 
+            // mais les devises exigent des règles. On simplifie en ajoutant juste le nom de la devise à la fin).
+            if (currencyStr !== "") {
+                result += " " + currencyStr;
+            }
+
+            outputBox.innerText = result;
+        }
+
+        function clearInput() {
+            document.getElementById('numberInput').value = '';
+            document.getElementById('outputBox').innerText = '...';
+            document.getElementById('numberInput').focus();
+        }
+
+        function copyResult() {
+            const outputText = document.getElementById('outputBox').innerText;
+            if (outputText === "..." || outputText === "Chiffre trop grand !") return;
+            
+            navigator.clipboard.writeText(outputText).then(() => {
+                showToast("Montant copié avec succès !");
+            });
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 2500);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur de Lorem Ipsum Arabe | Faux Texte RTL</title>
+    <meta name="description" content="Générez du faux texte en arabe (Lorem Ipsum) pour vos maquettes, designs et sites web RTL. Outil gratuit pour webdesigners et développeurs.">
+    <meta name="keywords" content="lorem ipsum arabe, faux texte arabe, texte de remplissage arabe, generateur texte arabe, maquette site web arabe, rtl dummy text, arabic placeholder">
+    <meta name="author" content="Clavier Arabe">
+    <link rel="canonical" href="https://clavier-arabe.github.io/generateur-lorem-ipsum-arabe/">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://clavier-arabe.github.io/generateur-lorem-ipsum-arabe/">
+    <meta property="og:title" content="Générateur de Lorem Ipsum Arabe">
+    <meta property="og:description" content="Créez des paragraphes de faux texte arabe naturel pour calibrer vos designs et sites web RTL.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .tool-header h1 { font-size: 1.8rem; color: #111827; margin-bottom: 8px; }
+        .tool-header p { color: var(--text-muted); font-size: 1rem; margin-bottom: 25px; }
+        
+        .tool-actions {
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 15px; padding-top: 10px;
+        }
+
+        /* Panneau d'options */
+        .options-panel {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .input-group label {
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.95rem;
+            white-space: nowrap;
+        }
+        
+        .number-input {
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            outline: none;
+            width: 80px;
+            text-align: center;
+            background: white;
+        }
+        .number-input:focus { border-color: var(--primary); }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            color: #374151;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+        }
+        .checkbox-label input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--primary); cursor: pointer; }
+
+        /* Boîte de résultat */
+        .result-textarea {
+            width: 100%; height: 300px; padding: 15px; font-size: 20px; border: 2px solid #d1d5db; 
+            border-radius: 8px; font-family: 'Amiri', serif; resize: vertical; outline: none; 
+            transition: 0.3s; background: #fdfdfd; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+            direction: rtl; line-height: 1.8;
+        }
+        .result-textarea:focus { border-color: var(--primary); }
+
+        .content-section a:hover {
+            border-color: var(--primary) !important;
+            background: #eff6ff !important;
+            color: var(--primary) !important;
+            text-decoration: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .options-panel { flex-direction: column; align-items: stretch; gap: 15px; }
+            .result-textarea { height: 200px; font-size: 18px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="full-width-header">
+        <div class="container">
+            <div class="grid-layout">
+                <div class="header-spacer"></div>
+                <div class="header-inner">
+                    <a href="/" class="logo"><span>Clavier Arabe</span> <span class="tiny"><i class="fa-solid fa-keyboard"></i></span></a>
+                    <a href="/" class="btn"><i class="fa-solid fa-keyboard"></i> Retour au Clavier</a>
+                </div>
+                <div class="header-spacer"></div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-content-area">
+        <div class="container">
+            <div class="grid-layout">
+                
+                <!-- Pub Gauche -->
+                <aside class="ad-sidebar left-ad"></aside>
+
+                <main class="main-panel">
+                    
+                    <!-- L'Outil -->
+                    <div class="boxed-section editor-card">
+                        <div class="tool-header">
+                            <h1>Générateur de Lorem Ipsum Arabe (Faux Texte)</h1>
+                            <p>Générez instantanément du texte de remplissage en arabe pour tester vos maquettes web, applications et designs graphiques RTL.</p>
+                        </div>
+
+                        <!-- Options de Génération -->
+                        <div class="options-panel">
+                            <div class="input-group">
+                                <label for="paraCount">Nombre de paragraphes:</label>
+                                <input type="number" id="paraCount" class="number-input" value="3" min="1" max="50">
+                            </div>
+                            <label class="checkbox-label" title="Enveloppe chaque paragraphe avec les balises HTML <p> et </p>">
+                                <input type="checkbox" id="addHtmlTags">
+                                Ajouter les balises HTML &lt;p&gt;
+                            </label>
+                            <button class="btn btn-primary" onclick="generateIpsum()" style="margin-left: auto;">
+                                <i class="fa-solid fa-arrows-rotate"></i> Générer
+                            </button>
+                        </div>
+
+                        <!-- Résultat -->
+                        <textarea id="outputBox" class="result-textarea" readonly></textarea>
+                        
+                        <div class="tool-actions">
+                            <div class="toolbar-group">
+                                <button class="btn btn-primary" onclick="copyResult()">
+                                    <i class="fa-regular fa-copy"></i> Copier le texte
+                                </button>
+                            </div>
+                            <div class="toolbar-group">
+                                <button class="btn btn-danger" onclick="clearInput()">
+                                    <i class="fa-solid fa-trash-can"></i> Effacer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contenu SEO de l'Outil -->
+                    <article class="boxed-section content-section">
+                        <h2>Qu'est-ce que le Lorem Ipsum en Arabe?</h2>
+                        <p>Dans le domaine du webdesign et de l'imprimerie, un <strong>texte de remplissage</strong> (ou <em>dummy text</em>) est un faux texte utilisé pour calibrer une mise en page avant l'intégration du contenu final. En Occident, le standard absolu est le "Lorem Ipsum" (un texte latin absurde).</p>
+                        <p>Cependant, pour les agences de communication et les développeurs travaillant sur des projets à destination du Maghreb ou du Moyen-Orient, le Lorem Ipsum latin est inutile. Il ne permet pas de visualiser correctement le comportement d'un design oriental.</p>
+
+                        <h3>Pourquoi avez-vous absolument besoin de faux texte arabe?</h3>
+                        
+                        <p><strong>1. Tester l'alignement RTL (Right-to-Left):</strong><br>
+                        Contrairement à l'anglais ou au français, l'arabe s'écrit et se lit de droite à gauche. Intégrer un faux texte en arabe permet de s'assurer que vos divs, vos marges (paddings/margins) et vos barres de défilement CSS réagissent correctement dans un environnement RTL.</p>
+
+                        <p><strong>2. Tester la typographie et l'interligne:</strong><br>
+                        Les polices d'écriture arabes (comme <em>Amiri</em>, <em>Cairo</em> ou <em>Tajawal</em>) ont des proportions très différentes des polices latines. Les lettres arabes possèdent de nombreuses courbes descendantes (comme le Ha ح ou le Yaa ي) et des accents (Harakat). Si vous utilisez du texte latin pour régler la hauteur de vos lignes (<code>line-height</code> en CSS), vos textes arabes finaux risquent de se chevaucher de manière illisible.</p>
+
+                        <p><strong>3. Présenter une maquette réaliste au client:</strong><br>
+                        Si vous présentez une maquette Photoshop, Figma ou Adobe XD à un client basé à Dubaï ou au Maroc, un texte rempli de caractères latins cassera l'immersion. Utiliser un <strong>Lorem Ipsum Arabe</strong> donne une apparence professionnelle et achevée à votre prototype.</p>
+
+                        <h3>Comment utiliser notre Générateur?</h3>
+                        <p>L'utilisation est très simple: indiquez le nombre de paragraphes dont vous avez besoin (de 1 à 50) et cliquez sur <strong>Générer</strong>. Notre algorithme piochera aléatoirement dans une vaste base de données de phrases arabes à l'orthographe parfaite (mélangeant des textes classiques et modernes) pour créer des blocs organiques et réalistes.</p>
+                        <p>Si vous êtes intégrateur Web, cochez l'option <strong>"Ajouter les balises HTML &lt;p&gt;"</strong>. Le texte généré inclura automatiquement les balises de paragraphe, prêt à être copié-collé directement dans votre éditeur de code (VS Code, Sublime Text, etc.).</p>
+                        <div style="margin-top: 40px; padding-top: 25px; border-top: 2px dashed #e5e7eb;">
+                            <h3 style="font-size: 1.4rem; color: #111827; margin-bottom: 15px; margin-top: 0;">Découvrez nos outils gratuits pour l'Arabe</h3>
+                            <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 20px;">Simplifiez votre rédaction, votre apprentissage ou votre développement informatique grâce à notre suite d'outils spécialisés:</p>
+                            
+                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px;">
+                                
+                                <!-- Outils Principaux -->
+                                <a href="/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-keyboard" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Arabe Virtuel
+                                </a>
+                                <a href="/clavier-persan-farsi/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-language" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Persan & Ourdou
+                                </a>
+                                <a href="/clavier-maghrebin-darija/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-earth-africa" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Maghrébin (Darija)
+                                </a>
+                                
+                                <!-- Outils de Manipulation de Texte -->
+                                <a href="/suppresseur-harakat/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-eraser" style="color: var(--primary); width: 20px; text-align: center;"></i> Suppresseur de Harakat
+                                </a>
+                                <a href="/nettoyeur-texte/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-broom" style="color: var(--primary); width: 20px; text-align: center;"></i> Nettoyeur de Texte
+                                </a>
+                                <a href="/allongement-tatweel/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-text-width" style="color: var(--primary); width: 20px; text-align: center;"></i> Étirer Texte (Tatweel)
+                                </a>
+                                <a href="/convertisseur-ponctuation-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-question" style="color: var(--primary); width: 20px; text-align: center;"></i> Inverser la Ponctuation
+                                </a>
+                                <a href="/chercher-remplacer-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-magnifying-glass-arrow-right" style="color: var(--primary); width: 20px; text-align: center;"></i> Chercher/Remplacer (Tolérant)
+                                </a>
+                                <a href="/reparateur-texte-photoshop/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--primary); width: 20px; text-align: center;"></i> Réparateur Photoshop/Adobe
+                                </a>
+                                
+                                <!-- Outils de Données, Nombres et Programmation -->
+                                <a href="/convertisseur-chiffres-arabes/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-1" style="color: var(--primary); width: 20px; text-align: center;"></i> Chiffres (Orientaux ↔ Européens)
+                                </a>
+                                <a href="/nombres-en-lettres-tafqit/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-money-check-dollar" style="color: var(--primary); width: 20px; text-align: center;"></i> Chiffres en Lettres (Tafqit)
+                                </a>
+                                <a href="/compteur-mots-caracteres/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-calculator" style="color: var(--primary); width: 20px; text-align: center;"></i> Compteur de Mots
+                                </a>
+                                <a href="/trieur-alphabetique/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-arrow-down-a-z" style="color: var(--primary); width: 20px; text-align: center;"></i> Trieur Alphabétique Arabe
+                                </a>
+                                <a href="/analyseur-frequence-mots-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-chart-simple" style="color: var(--primary); width: 20px; text-align: center;"></i> Analyseur de Densité (SEO)
+                                </a>
+                                <a href="/extracteur-texte/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-filter" style="color: var(--primary); width: 20px; text-align: center;"></i> Extracteur de Texte Arabe
+                                </a>
+                                <a href="/encodeur-decodeur-url-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-link" style="color: var(--primary); width: 20px; text-align: center;"></i> Décodeur d'URL Arabe
+                                </a>
+                                <a href="/generateur-lorem-ipsum-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-paragraph" style="color: var(--primary); width: 20px; text-align: center;"></i> Générateur Lorem Ipsum
+                                </a>
+
+                                <!-- Outils Divers et Accessibilité -->
+                                <a href="/lecteur-texte-arabe-vocal/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-volume-high" style="color: var(--primary); width: 20px; text-align: center;"></i> Lecteur Vocal (TTS)
+                                </a>
+                                <a href="/convertisseur-arabe-braille/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-braille" style="color: var(--primary); width: 20px; text-align: center;"></i> Traducteur Arabe ➔ Braille
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                </main>
+
+                <!-- Pub Droite -->
+                <aside class="ad-sidebar right-ad"></aside>
+
+            </div>
+        </div>
+    </div>
+
+    <footer class="full-width-footer">
+        <div class="container">
+            <div class="grid-layout">
+                <div class="footer-spacer"></div>
+                <div class="footer-inner">
+                    <div class="footer-links">
+                        <a href="/privacy/">Politique de Confidentialité</a>
+                        <a href="/cookies/">Politique des Cookies</a>
+                        <a href="/terms/">Conditions d'Utilisation</a>
+                        <a href="/contact/">Contact</a>
+                    </div>
+                    <div>&copy; 2026 Clavier Arabe. Tous droits réservés.</div>
+                </div>
+                <div class="footer-spacer"></div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast">Action réussie !</div>
+
+    <!-- SCRIPT DU GÉNÉRATEUR LOREM IPSUM ARABE -->
+    <script>
+        // Corpus de phrases arabes classiques et organiques pour générer le faux texte
+        const arabicCorpus = [
+            "هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة.",
+            "لقد تم توليد هذا النص من مولد النص العربى، حيث يمكنك أن تولد مثل هذا النص أو العديد من النصوص الأخرى إضافة إلى زيادة عدد الحروف التى يولدها التطبيق.",
+            "إذا كنت تحتاج إلى عدد أكبر من الفقرات يتيح لك المولد زيادة عدد الفقرات كما تريد.",
+            "النص لن يبدو مقسما ولا يحوي أخطاء لغوية.",
+            "مولد النص العربى مفيد لمصممي المواقع على وجه الخصوص.",
+            "يحتاج العميل فى كثير من الأحيان أن يطلع على صورة حقيقية لتصميم الموقع.",
+            "على المصمم أن يضع نصوصا مؤقتة على التصميم ليظهر للعميل الشكل كاملاً.",
+            "دور مولد النص العربى أن يوفر على المصمم عناء البحث عن نص بديل لا علاقة له بالموضوع الذى يتحدث عنه التصميم فيظهر بشكل لا يليق.",
+            "هذا النص يمكن أن يتم تركيبه على أي تصميم دون مشكلة فلن يبدو وكأنه نص منسوخ.",
+            "تعتبر اللغة العربية من أغنى اللغات في العالم من حيث المفردات والتراكيب اللغوية.",
+            "استخدام نص عربي تجريبي يساعد في ضبط المسافات بين السطور وتنسيق الفقرات بشكل صحيح.",
+            "الخطوط العربية تختلف جذريا عن الخطوط اللاتينية في الارتفاع والانخفاض.",
+            "يجب دائما تجربة التصميم بنص عربي حقيقي لمعرفة مدى توافق الخطوط.",
+            "يعتبر التصميم الجيد هو الذي يوازن بين الجمال الوظيفي وسهولة القراءة للمستخدم النهائي.",
+            "يهدف هذا المولد إلى تيسير العمل اليومي للمطورين والمصممين في العالم العربي."
+        ];
+
+        // Génère le texte lors du chargement de la page
+        window.onload = () => {
+            generateIpsum();
+        };
+
+        function generateIpsum() {
+            const count = parseInt(document.getElementById('paraCount').value) || 1;
+            const useHtml = document.getElementById('addHtmlTags').checked;
+            const outputBox = document.getElementById('outputBox');
+            
+            let resultText = "";
+
+            for (let i = 0; i < count; i++) {
+                let paragraph = "";
+                // On génère entre 3 et 6 phrases par paragraphe pour un rendu naturel
+                let sentenceCount = Math.floor(Math.random() * 4) + 3;
+                
+                for (let j = 0; j < sentenceCount; j++) {
+                    // Sélection d'une phrase aléatoire dans le corpus
+                    let randomSentence = arabicCorpus[Math.floor(Math.random() * arabicCorpus.length)];
+                    paragraph += randomSentence + " ";
+                }
+
+                paragraph = paragraph.trim();
+
+                if (useHtml) {
+                    resultText += `<p dir="rtl">${paragraph}</p>\n\n`;
+                } else {
+                    resultText += `${paragraph}\n\n`;
+                }
+            }
+
+            // Direction spécifique si HTML est coché (LTR pour lire les balises <p>, RTL pour le texte brut)
+            if (useHtml) {
+                outputBox.style.direction = "ltr";
+                outputBox.style.textAlign = "left";
+                outputBox.style.fontFamily = "'Inter', sans-serif";
+            } else {
+                outputBox.style.direction = "rtl";
+                outputBox.style.textAlign = "right";
+                outputBox.style.fontFamily = "'Amiri', serif";
+            }
+
+            outputBox.value = resultText.trim();
+        }
+
+        function clearInput() {
+            document.getElementById('outputBox').value = '';
+        }
+
+        function copyResult() {
+            const outputBox = document.getElementById('outputBox');
+            if (!outputBox.value.trim()) return;
+            
+            outputBox.select();
+            navigator.clipboard.writeText(outputBox.value).then(() => {
+                showToast("Faux texte copié avec succès !");
+            });
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 2500);
+        }
+    </script>
+</body>
+</html>

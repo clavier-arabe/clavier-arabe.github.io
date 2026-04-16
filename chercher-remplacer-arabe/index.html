@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chercher et Remplacer (Spécial Arabe)</title>
+    <meta name="description" content="Outil de recherche et remplacement de texte arabe. Ignorez la Hamza (أ,إ,ا) et le Ta Marbuta (ة,ه) pour trouver tous les mots cachés dans vos documents.">
+    <meta name="keywords" content="chercher et remplacer arabe, ignorer hamza, recherche tolerante arabe, find and replace arabic text, corriger orthographe arabe, remplacer mot arabe">
+    <meta name="author" content="Clavier Arabe">
+    <link rel="canonical" href="https://clavier-arabe.github.io/chercher-remplacer-arabe/">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://clavier-arabe.github.io/chercher-remplacer-arabe/">
+    <meta property="og:title" content="Chercher & Remplacer Tolérant (Spécial Arabe)">
+    <meta property="og:description" content="Trouvez et remplacez des mots en arabe même si la Hamza ou les Harakat sont mal orthographiés.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .tool-header h1 { font-size: 1.8rem; color: #111827; margin-bottom: 8px; }
+        .tool-header p { color: var(--text-muted); font-size: 1rem; margin-bottom: 25px; }
+        
+        .tool-actions {
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 15px;
+        }
+
+        /* Panneau de recherche et remplacement */
+        .search-panel {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .input-group label {
+            font-weight: 700;
+            color: #374151;
+            font-size: 0.95rem;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .search-input {
+            padding: 12px 15px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-family: 'Amiri', serif;
+            font-size: 20px;
+            outline: none;
+            background: white;
+            transition: 0.2s;
+            direction: rtl;
+            width: 100%;
+        }
+        .search-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,102,204,0.15); }
+        
+        /* Options de recherche (Checkboxes) */
+        .options-row {
+            grid-column: 1 / -1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding-top: 10px;
+            border-top: 1px dashed #d1d5db;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            color: #374151;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+        }
+        .checkbox-label input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--primary); cursor: pointer; }
+
+        /* Highlight des mots remplacés */
+        .stats-badge {
+            background: #eff6ff;
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .content-section a:hover {
+            border-color: var(--primary) !important;
+            background: #eff6ff !important;
+            color: var(--primary) !important;
+            text-decoration: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .search-panel { grid-template-columns: 1fr; gap: 15px; }
+            .search-input { font-size: 18px; padding: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="full-width-header">
+        <div class="container">
+            <div class="grid-layout">
+                <div class="header-spacer"></div>
+                <div class="header-inner">
+                    <a href="/" class="logo"><span>Clavier Arabe</span> <span class="tiny"><i class="fa-solid fa-keyboard"></i></span></a>
+                    <a href="/" class="btn"><i class="fa-solid fa-keyboard"></i> Retour au Clavier</a>
+                </div>
+                <div class="header-spacer"></div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-content-area">
+        <div class="container">
+            <div class="grid-layout">
+                
+                <!-- Pub Gauche -->
+                <aside class="ad-sidebar left-ad"></aside>
+
+                <main class="main-panel">
+                    
+                    <!-- L'Outil -->
+                    <div class="boxed-section editor-card">
+                        <div class="tool-header">
+                            <h1>Chercher et Remplacer Avancé (Spécial Arabe)</h1>
+                            <p>Modifiez en masse les mots de votre texte. L'outil trouve un mot même si la Hamza (أ) ou le Ta Marbuta (ة) ont été mal saisis.</p>
+                        </div>
+
+                        <!-- Éditeur Principal -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <label style="font-weight: 600; color: #374151;">Texte du document:</label>
+                            <span class="stats-badge" id="replaceStats" style="display: none;">
+                                <i class="fa-solid fa-check-circle"></i> <span id="replaceCount">0</span> remplacements
+                            </span>
+                        </div>
+                        <textarea id="mainText" class="text-area-input tool-textarea" placeholder="Collez votre document arabe ici" style="height: 250px;"></textarea>
+                        
+                        <!-- Panneau de recherche -->
+                        <div class="search-panel">
+                            <div class="input-group">
+                                <label for="searchWord">Rechercher le mot:</label>
+                                <input type="text" id="searchWord" class="search-input" placeholder="احمد">
+                            </div>
+                            <div class="input-group">
+                                <label for="replaceWord">Le remplacer par:</label>
+                                <input type="text" id="replaceWord" class="search-input" placeholder="أحمد">
+                            </div>
+                            
+                            <div class="options-row">
+                                <label class="checkbox-label" title="Ignore les différences entre ا, أ, إ, آ, et entre ة, ه">
+                                    <input type="checkbox" id="tolerantSearch" checked>
+                                    Ignore les différences entre ا, أ, إ, آ, et entre ة, ه
+                                </label>
+                                <label class="checkbox-label" title="Ignore les voyelles courtes (Fatha, Kasra...)">
+                                    <input type="checkbox" id="ignoreHarakat" checked>
+                                    Ignorer les Harakat (Diacritiques)
+                                </label>
+                                <label class="checkbox-label" title="Ne remplace que les mots isolés (pas les lettres à l'intérieur d'un autre mot)">
+                                    <input type="checkbox" id="wholeWord" checked>
+                                    Mots entiers uniquement
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="tool-actions">
+                            <div class="toolbar-group">
+                                <button class="btn btn-primary" onclick="performReplace()">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i> Remplacer Tout
+                                </button>
+                                <button class="btn" onclick="copyResult()">
+                                    <i class="fa-regular fa-copy"></i> Copier le texte
+                                </button>
+                            </div>
+                            <div class="toolbar-group">
+                                <button class="btn btn-danger" onclick="clearAll()">
+                                    <i class="fa-solid fa-trash-can"></i> Tout vider
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contenu SEO de l'Outil -->
+                    <article class="boxed-section content-section">
+                        <h2>Pourquoi le raccourci classique (Ctrl+F) ne fonctionne pas bien en Arabe?</h2>
+                        <p>Si vous êtes journaliste, professeur, traducteur ou rédacteur, vous utilisez probablement souvent la fonction <em>Rechercher et Remplacer</em> de Microsoft Word ou de Google Docs. Malheureusement, le moteur de recherche de ces logiciels est configuré de manière "stricte" (Standard ASCII/Unicode matching).</p>
+                        
+                        <p>Dans la typographie arabe quotidienne, l'orthographe est très souvent bâclée ou "simplifiée" par les internautes:</p>
+                        <ul>
+                            <li><strong>Le problème de la Hamza:</strong> Les lettres `أ` (Alif Hamza en haut), `إ` (Alif Hamza en bas), `آ` (Alif Madda) sont extrêmement souvent tapées sous la forme d'un simple `ا` (Alif nu). Si vous cherchez le prénom "أحمد" (Ahmed correctement orthographié), Word ignorera toutes les fois où l'auteur a tapé "احمد".</li>
+                            <li><strong>Le problème du Tâ Marbûta:</strong> La lettre finale féminine `ة` (Tâ Marbûta) est souvent tapée comme un `ه` (Hâ) par erreur. Par exemple: `مدرسة` (École) écrit `مدرسه`.</li>
+                            <li><strong>Le problème du Yâ et du Alif Maksura:</strong> Le `ي` (Yâ avec points) est souvent confondu avec le `ى` (Alif Maksura sans points) à la fin des mots, particulièrement en Égypte.</li>
+                        </ul>
+
+                        <h3>Comment fonctionne la "Recherche Tolérante"?</h3>
+                        <p>Notre <strong>outil de recherche et remplacement avancé pour la langue arabe</strong> utilise un algorithme puissant basé sur des expressions régulières (Regex) en JavaScript. </p>
+                        <p>Lorsque vous cochez l'option <em>"Recherche Tolérante"</em>, l'outil analyse le mot que vous cherchez (par exemple: <code>مدرسة</code>) et demande au système de rechercher <strong>toutes les variations possibles</strong> (<code>مدرسة</code>, <code>مدرسه</code>). Il remplacera toutes ces erreurs par le mot correct que vous avez saisi dans la case "Le remplacer par".</p>
+
+                        <h3>Les filtres avancés expliqués:</h3>
+                        <ul>
+                            <li><strong>Ignorer les Harakat (Diacritiques):</strong> Si le texte original contient des voyelles courtes (Tashkeel) comme la Fatha (َ) ou la Kasra (ِ), la recherche risque d'échouer. Cette option permet à l'outil de localiser le mot "مُحَمَّد" même si vous avez cherché "محمد".</li>
+                            <li><strong>Mots entiers uniquement:</strong> Si vous cherchez le mot "من" (De/Depuis) et que vous le remplacez, vous risquez de détruire des mots qui contiennent ces deux lettres (ex: "ال<strong>من</strong>زل"). En cochant cette option, l'outil ne remplacera "من" que s'il est isolé, protégé par des espaces ou de la ponctuation.</li>
+                        </ul>
+
+                        <h3>Vie Privée Garantie (100% Hors Ligne)</h3>
+                        <p>Traiter de longs documents juridiques, des articles de presse non publiés ou des essais académiques demande un niveau de sécurité élevé. Cet outil ne fonctionne pas via un serveur distant (API). L'algorithme de remplacement est téléchargé sur votre navigateur lors de l'ouverture de la page et tourne localement sur votre ordinateur. <strong>Vos textes ne sont ni lus, ni stockés, ni sauvegardés en ligne.</strong></p>
+                        <div style="margin-top: 40px; padding-top: 25px; border-top: 2px dashed #e5e7eb;">
+                            <h3 style="font-size: 1.4rem; color: #111827; margin-bottom: 15px; margin-top: 0;">Découvrez nos outils gratuits pour l'Arabe</h3>
+                            <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 20px;">Simplifiez votre rédaction, votre apprentissage ou votre développement informatique grâce à notre suite d'outils spécialisés:</p>
+                            
+                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px;">
+                                
+                                <!-- Outils Principaux -->
+                                <a href="/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-keyboard" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Arabe Virtuel
+                                </a>
+                                <a href="/clavier-persan-farsi/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-language" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Persan & Ourdou
+                                </a>
+                                <a href="/clavier-maghrebin-darija/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-earth-africa" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Maghrébin (Darija)
+                                </a>
+                                
+                                <!-- Outils de Manipulation de Texte -->
+                                <a href="/suppresseur-harakat/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-eraser" style="color: var(--primary); width: 20px; text-align: center;"></i> Suppresseur de Harakat
+                                </a>
+                                <a href="/nettoyeur-texte/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-broom" style="color: var(--primary); width: 20px; text-align: center;"></i> Nettoyeur de Texte
+                                </a>
+                                <a href="/allongement-tatweel/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-text-width" style="color: var(--primary); width: 20px; text-align: center;"></i> Étirer Texte (Tatweel)
+                                </a>
+                                <a href="/convertisseur-ponctuation-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-question" style="color: var(--primary); width: 20px; text-align: center;"></i> Inverser la Ponctuation
+                                </a>
+                                <a href="/chercher-remplacer-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-magnifying-glass-arrow-right" style="color: var(--primary); width: 20px; text-align: center;"></i> Chercher/Remplacer (Tolérant)
+                                </a>
+                                <a href="/reparateur-texte-photoshop/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--primary); width: 20px; text-align: center;"></i> Réparateur Photoshop/Adobe
+                                </a>
+                                
+                                <!-- Outils de Données, Nombres et Programmation -->
+                                <a href="/convertisseur-chiffres-arabes/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-1" style="color: var(--primary); width: 20px; text-align: center;"></i> Chiffres (Orientaux ↔ Européens)
+                                </a>
+                                <a href="/nombres-en-lettres-tafqit/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-money-check-dollar" style="color: var(--primary); width: 20px; text-align: center;"></i> Chiffres en Lettres (Tafqit)
+                                </a>
+                                <a href="/compteur-mots-caracteres/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-calculator" style="color: var(--primary); width: 20px; text-align: center;"></i> Compteur de Mots
+                                </a>
+                                <a href="/trieur-alphabetique/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-arrow-down-a-z" style="color: var(--primary); width: 20px; text-align: center;"></i> Trieur Alphabétique Arabe
+                                </a>
+                                <a href="/analyseur-frequence-mots-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-chart-simple" style="color: var(--primary); width: 20px; text-align: center;"></i> Analyseur de Densité (SEO)
+                                </a>
+                                <a href="/extracteur-texte/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-filter" style="color: var(--primary); width: 20px; text-align: center;"></i> Extracteur de Texte Arabe
+                                </a>
+                                <a href="/encodeur-decodeur-url-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-link" style="color: var(--primary); width: 20px; text-align: center;"></i> Décodeur d'URL Arabe
+                                </a>
+                                <a href="/generateur-lorem-ipsum-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-paragraph" style="color: var(--primary); width: 20px; text-align: center;"></i> Générateur Lorem Ipsum
+                                </a>
+
+                                <!-- Outils Divers et Accessibilité -->
+                                <a href="/lecteur-texte-arabe-vocal/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-volume-high" style="color: var(--primary); width: 20px; text-align: center;"></i> Lecteur Vocal (TTS)
+                                </a>
+                                <a href="/convertisseur-arabe-braille/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-braille" style="color: var(--primary); width: 20px; text-align: center;"></i> Traducteur Arabe ➔ Braille
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                </main>
+
+                <!-- Pub Droite -->
+                <aside class="ad-sidebar right-ad"></aside>
+
+            </div>
+        </div>
+    </div>
+
+    <footer class="full-width-footer">
+        <div class="container">
+            <div class="grid-layout">
+                <div class="footer-spacer"></div>
+                <div class="footer-inner">
+                    <div class="footer-links">
+                        <a href="/privacy/">Politique de Confidentialité</a>
+                        <a href="/cookies/">Politique des Cookies</a>
+                        <a href="/terms/">Conditions d'Utilisation</a>
+                        <a href="/contact/">Contact</a>
+                    </div>
+                    <div>&copy; 2026 Clavier Arabe. Tous droits réservés.</div>
+                </div>
+                <div class="footer-spacer"></div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast">Action réussie !</div>
+
+    <!-- SCRIPT DE RECHERCHE ET REMPLACEMENT AVANCÉ -->
+    <script>
+        function performReplace() {
+            const mainText = document.getElementById('mainText');
+            let text = mainText.value;
+            const searchWord = document.getElementById('searchWord').value.trim();
+            const replaceWord = document.getElementById('replaceWord').value;
+            const statsBadge = document.getElementById('replaceStats');
+            const countDisplay = document.getElementById('replaceCount');
+
+            if (!text || !searchWord) {
+                showToast("Veuillez remplir le texte et le mot à rechercher.");
+                return;
+            }
+
+            const tolerantSearch = document.getElementById('tolerantSearch').checked;
+            const ignoreHarakat = document.getElementById('ignoreHarakat').checked;
+            const wholeWord = document.getElementById('wholeWord').checked;
+
+            // Construction du Pattern de recherche
+            let searchPattern = searchWord;
+
+            // 1. Si on ignore les Harakat, on supprime d'abord les harakat du mot recherché (au cas où l'utilisateur en a tapé)
+            if (ignoreHarakat) {
+                searchPattern = searchPattern.replace(/[\u064B-\u065F\u0670]/g, '');
+            }
+
+            // Pour appliquer la recherche tolérante ou ignorer les Harakat dans le texte cible, 
+            // il faut transformer chaque caractère de la recherche en un groupe regex [ ... ]
+            
+            let finalRegexPattern = "";
+
+            for (let i = 0; i < searchPattern.length; i++) {
+                let char = searchPattern[i];
+                let charPattern = char; // Par défaut, on cherche la lettre exacte
+
+                if (tolerantSearch) {
+                    // Tolérance sur les formes du Alif
+                    if (['ا', 'أ', 'إ', 'آ'].includes(char)) {
+                        charPattern = "[اأإآ]";
+                    }
+                    // Tolérance sur Ta Marbuta et Ha final
+                    else if (['ة', 'ه'].includes(char)) {
+                        charPattern = "[ةه]";
+                    }
+                    // Tolérance sur Yaa et Alif Maksura final
+                    else if (['ي', 'ى'].includes(char)) {
+                        charPattern = "[يى]";
+                    }
+                }
+
+                // Si on ignore les Harakat, après CHAQUE lettre (ou groupe de lettres), 
+                // on autorise la présence optionnelle de Zéro ou plusieurs Harakat (0 ou *)
+                if (ignoreHarakat) {
+                    finalRegexPattern += charPattern + "[\\u064B-\\u065F\\u0670]*";
+                } else {
+                    finalRegexPattern += charPattern;
+                }
+            }
+
+            // 3. Mots entiers (Whole Word boundary)
+            // L'arabe (UTF-8) ne réagit pas toujours bien à la frontière de mot classique \b du regex occidental.
+            // On construit une frontière sécurisée: la recherche doit être précédée et suivie soit par le début/fin du texte (^|$), 
+            // soit par des caractères non-arabes (espaces, ponctuation, etc.)
+            let fullRegex;
+            if (wholeWord) {
+                const arabicLetters = "\\u0621-\\u064A\\u0671-\\u06D3"; // Lettres de base
+                const boundaryBefore = `(?:^|[^${arabicLetters}])`; // Pas une lettre arabe
+                const boundaryAfter = `(?=[^${arabicLetters}]|$)`; // Suivi de "pas une lettre arabe"
+                
+                // Pour capturer et restaurer les caractères de frontière (espaces, ponctuation), 
+                // on capture le boundaryBefore dans le groupe (1)
+                fullRegex = new RegExp(`(${boundaryBefore})(${finalRegexPattern})${boundaryAfter}`, 'g');
+            } else {
+                fullRegex = new RegExp(`(${finalRegexPattern})`, 'g');
+            }
+
+            // Exécution du remplacement et comptage
+            let replaceCount = 0;
+            let resultText = "";
+
+            if (wholeWord) {
+                resultText = text.replace(fullRegex, function(match, p1, p2) {
+                    replaceCount++;
+                    // On restaure p1 (ex: l'espace ou la virgule avant le mot) et on place le mot de remplacement
+                    return p1 + replaceWord; 
+                });
+            } else {
+                resultText = text.replace(fullRegex, function(match) {
+                    replaceCount++;
+                    return replaceWord;
+                });
+            }
+
+            if (replaceCount > 0) {
+                mainText.value = resultText;
+                countDisplay.innerText = replaceCount;
+                statsBadge.style.display = "inline-flex";
+                showToast(replaceCount + " remplacement(s) effectué(s) !");
+            } else {
+                statsBadge.style.display = "none";
+                showToast("Le mot n'a pas été trouvé.");
+            }
+        }
+
+        function clearAll() {
+            document.getElementById('mainText').value = '';
+            document.getElementById('searchWord').value = '';
+            document.getElementById('replaceWord').value = '';
+            document.getElementById('replaceStats').style.display = 'none';
+            document.getElementById('searchWord').focus();
+        }
+
+        function copyResult() {
+            const mainText = document.getElementById('mainText');
+            if (!mainText.value.trim()) return;
+            
+            mainText.select();
+            navigator.clipboard.writeText(mainText.value).then(() => {
+                showToast("Texte copié !");
+            });
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 2500);
+        }
+    </script>
+</body>
+</html>

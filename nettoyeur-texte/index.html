@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nettoyeur de Texte Arabe | Corriger la Ponctuation et les Espaces</title>
+    <meta name="description" content="Nettoyez et formatez automatiquement vos textes arabes: corrigez la ponctuation, supprimez les espaces en double et les sauts de ligne inutiles. Outil gratuit.">
+    <meta name="keywords" content="nettoyeur texte arabe, corriger ponctuation arabe, virgule arabe, formater texte arabe, supprimer espaces en double, arabic text cleaner">
+    <meta name="author" content="Clavier Arabe">
+    <link rel="canonical" href="https://clavier-arabe.github.io/nettoyeur-texte/">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://clavier-arabe.github.io/nettoyeur-texte/">
+    <meta property="og:title" content="Nettoyeur et Formateur de Texte Arabe">
+    <meta property="og:description" content="Formatez proprement vos articles arabes en corrigeant instantanément les espaces et la ponctuation.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .tool-header h1 { font-size: 1.8rem; color: #111827; margin-bottom: 8px; }
+        .tool-header p { color: var(--text-muted); font-size: 1rem; margin-bottom: 25px; }
+        
+        .tool-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        /* Checkboxes pour les options de nettoyage */
+        .options-panel {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 12px;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            color: #374151;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .checkbox-label input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .content-section a:hover {
+            border-color: var(--primary) !important;
+            background: #eff6ff !important;
+            color: var(--primary) !important;
+            text-decoration: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="full-width-header">
+        <div class="container">
+            <div class="grid-layout">
+                <div class="header-spacer"></div>
+                <div class="header-inner">
+                    <a href="/" class="logo"><span>Clavier Arabe</span> <span class="tiny"><i class="fa-solid fa-keyboard"></i></span></a>
+                    <a href="/" class="btn"><i class="fa-solid fa-keyboard"></i> Retour au Clavier</a>
+                </div>
+                <div class="header-spacer"></div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-content-area">
+        <div class="container">
+            <div class="grid-layout">
+                
+                <!-- Pub Gauche -->
+                <aside class="ad-sidebar left-ad"></aside>
+
+                <main class="main-panel">
+                    
+                    <!-- L'Outil -->
+                    <div class="boxed-section editor-card">
+                        <div class="tool-header">
+                            <h1>Nettoyeur et Formateur de Texte Arabe</h1>
+                            <p>Corrigez instantanément les erreurs de frappe courantes, standardisez la ponctuation et supprimez les espaces superflus de vos textes arabes.</p>
+                        </div>
+
+                        <textarea id="toolInput" class="text-area-input tool-textarea" placeholder="Collez votre texte arabe mal formaté ici"></textarea>
+                        
+                        <!-- Options de nettoyage -->
+                        <div class="options-panel">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="optSpaces" checked>
+                                Supprimer les espaces en double
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="optLines" checked>
+                                Supprimer les sauts de ligne excessifs
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="optPunctuation" checked>
+                                Convertir (?, ; ,) en arabe (؟، ؛ ،)
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="optPunctSpaces" checked>
+                                Corriger les espaces autour des ponctuations
+                            </label>
+                        </div>
+
+                        <div class="tool-actions">
+                            <div class="toolbar-group">
+                                <button class="btn btn-primary" onclick="cleanText()">
+                                    <i class="fa-solid fa-broom"></i> Nettoyer le texte
+                                </button>
+                                <button class="btn" onclick="copyText()">
+                                    <i class="fa-regular fa-copy"></i> Copier
+                                </button>
+                            </div>
+                            <div class="toolbar-group">
+                                <button class="btn btn-danger" onclick="clearText()">
+                                    <i class="fa-solid fa-trash-can"></i> Vider
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contenu SEO de l'Outil -->
+                    <article class="boxed-section content-section">
+                        <h2>Pourquoi nettoyer et formater ses textes en arabe?</h2>
+                        <p>L'arabe est une langue riche et complexe, mais la saisie informatique sur des claviers occidentaux entraîne souvent des erreurs typographiques très fréquentes. Ce <strong>Nettoyeur de Texte Arabe</strong> est l'outil parfait pour les journalistes, les étudiants, et les webmasters qui souhaitent publier un contenu propre et professionnel.</p>
+
+                        <h3>1. Standardisation de la Ponctuation Arabe</h3>
+                        <p>La plupart des utilisateurs tapent la virgule latine (<code>,</code>), le point d'interrogation latin (<code>?</code>) et le point-virgule (<code>;</code>) car ils sont plus faciles à trouver sur un clavier physique. Cependant, en arabe, l'écriture se faisant de droite à gauche, la ponctuation doit être inversée:</p>
+                        <ul>
+                            <li>La virgule latine <code>,</code> devient la virgule arabe <strong><code>،</code></strong></li>
+                            <li>Le point d'interrogation <code>?</code> devient <strong><code>؟</code></strong></li>
+                            <li>Le point-virgule <code>;</code> devient <strong><code>؛</code></strong></li>
+                        </ul>
+                        <p>Notre outil repère ces erreurs et les remplace automatiquement par leurs équivalents Unicode arabes corrects.</p>
+
+                        <h3>2. Correction des Espaces avant la Ponctuation</h3>
+                        <p>Une erreur courante consiste à laisser un espace avant une virgule ou un point (Exemple erroné: <code>مرحبا ، كيف حالك ؟</code>). Les règles typographiques arabes, tout comme en anglais ou en français pour la virgule, exigent que la ponctuation soit collée au mot qui la précède (Exemple correct: <code>مرحبا، كيف حالك؟</code>). L'option "Corriger les espaces" s'en charge pour vous.</p>
+
+                        <h3>3. Suppression des espaces et sauts de ligne excessifs</h3>
+                        <p>Lorsque vous copiez un texte depuis un fichier PDF, un e-mail ou un site web, il arrive souvent accompagné de doubles espaces ou de dizaines de sauts de ligne invisibles qui ruinent la mise en page de votre blog ou de votre document Word. Le nettoyeur réduit les espaces multiples à un seul espace, et limite les sauts de ligne consécutifs à un maximum de deux (un seul paragraphe de séparation).</p>
+
+                        <h3>Un outil 100% sécurisé et privé</h3>
+                        <p>Comme tous les outils de <em>Clavier Arabe</em>, ce nettoyeur fonctionne grâce à un script JavaScript exécuté <strong>uniquement dans votre navigateur</strong>. Vos textes, articles ou documents confidentiels ne quittent jamais votre ordinateur et ne sont stockés sur aucune base de données.</p>
+                        <div style="margin-top: 40px; padding-top: 25px; border-top: 2px dashed #e5e7eb;">
+                            <h3 style="font-size: 1.4rem; color: #111827; margin-bottom: 15px; margin-top: 0;">Découvrez nos outils gratuits pour l'Arabe</h3>
+                            <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 20px;">Simplifiez votre rédaction, votre apprentissage ou votre développement informatique grâce à notre suite d'outils spécialisés:</p>
+                            
+                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px;">
+                                
+                                <!-- Outils Principaux -->
+                                <a href="/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-keyboard" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Arabe Virtuel
+                                </a>
+                                <a href="/clavier-persan-farsi/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-language" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Persan & Ourdou
+                                </a>
+                                <a href="/clavier-maghrebin-darija/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-earth-africa" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Maghrébin (Darija)
+                                </a>
+                                
+                                <!-- Outils de Manipulation de Texte -->
+                                <a href="/suppresseur-harakat/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-eraser" style="color: var(--primary); width: 20px; text-align: center;"></i> Suppresseur de Harakat
+                                </a>
+                                <a href="/nettoyeur-texte/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-broom" style="color: var(--primary); width: 20px; text-align: center;"></i> Nettoyeur de Texte
+                                </a>
+                                <a href="/allongement-tatweel/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-text-width" style="color: var(--primary); width: 20px; text-align: center;"></i> Étirer Texte (Tatweel)
+                                </a>
+                                <a href="/convertisseur-ponctuation-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-question" style="color: var(--primary); width: 20px; text-align: center;"></i> Inverser la Ponctuation
+                                </a>
+                                <a href="/chercher-remplacer-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-magnifying-glass-arrow-right" style="color: var(--primary); width: 20px; text-align: center;"></i> Chercher/Remplacer (Tolérant)
+                                </a>
+                                <a href="/reparateur-texte-photoshop/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--primary); width: 20px; text-align: center;"></i> Réparateur Photoshop/Adobe
+                                </a>
+                                
+                                <!-- Outils de Données, Nombres et Programmation -->
+                                <a href="/convertisseur-chiffres-arabes/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-1" style="color: var(--primary); width: 20px; text-align: center;"></i> Chiffres (Orientaux ↔ Européens)
+                                </a>
+                                <a href="/nombres-en-lettres-tafqit/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-money-check-dollar" style="color: var(--primary); width: 20px; text-align: center;"></i> Chiffres en Lettres (Tafqit)
+                                </a>
+                                <a href="/compteur-mots-caracteres/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-calculator" style="color: var(--primary); width: 20px; text-align: center;"></i> Compteur de Mots
+                                </a>
+                                <a href="/trieur-alphabetique/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-arrow-down-a-z" style="color: var(--primary); width: 20px; text-align: center;"></i> Trieur Alphabétique Arabe
+                                </a>
+                                <a href="/analyseur-frequence-mots-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-chart-simple" style="color: var(--primary); width: 20px; text-align: center;"></i> Analyseur de Densité (SEO)
+                                </a>
+                                <a href="/extracteur-texte/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-filter" style="color: var(--primary); width: 20px; text-align: center;"></i> Extracteur de Texte Arabe
+                                </a>
+                                <a href="/encodeur-decodeur-url-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-link" style="color: var(--primary); width: 20px; text-align: center;"></i> Décodeur d'URL Arabe
+                                </a>
+                                <a href="/generateur-lorem-ipsum-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-paragraph" style="color: var(--primary); width: 20px; text-align: center;"></i> Générateur Lorem Ipsum
+                                </a>
+
+                                <!-- Outils Divers et Accessibilité -->
+                                <a href="/lecteur-texte-arabe-vocal/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-volume-high" style="color: var(--primary); width: 20px; text-align: center;"></i> Lecteur Vocal (TTS)
+                                </a>
+                                <a href="/convertisseur-arabe-braille/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-braille" style="color: var(--primary); width: 20px; text-align: center;"></i> Traducteur Arabe ➔ Braille
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                </main>
+
+                <!-- Pub Droite -->
+                <aside class="ad-sidebar right-ad"></aside>
+
+            </div>
+        </div>
+    </div>
+
+    <footer class="full-width-footer">
+        <div class="container">
+            <div class="grid-layout">
+                <div class="footer-spacer"></div>
+                <div class="footer-inner">
+                    <div class="footer-links">
+                        <a href="/privacy/">Politique de Confidentialité</a>
+                        <a href="/cookies/">Politique des Cookies</a>
+                        <a href="/terms/">Conditions d'Utilisation</a>
+                        <a href="/contact/">Contact</a>
+                    </div>
+                    <div>&copy; 2026 Clavier Arabe. Tous droits réservés.</div>
+                </div>
+                <div class="footer-spacer"></div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast">Action réussie !</div>
+
+    <!-- SCRIPT DE NETTOYAGE ARABE -->
+    <script>
+        function cleanText() {
+            const textarea = document.getElementById('toolInput');
+            let text = textarea.value;
+
+            if (!text.trim()) return;
+
+            const optSpaces = document.getElementById('optSpaces').checked;
+            const optLines = document.getElementById('optLines').checked;
+            const optPunctuation = document.getElementById('optPunctuation').checked;
+            const optPunctSpaces = document.getElementById('optPunctSpaces').checked;
+
+            // 1. Supprimer les espaces en double
+            if (optSpaces) {
+                text = text.replace(/[ \t]{2,}/g, ' '); // Remplace 2+ espaces ou tabulations par 1 espace
+            }
+
+            // 2. Supprimer les sauts de ligne excessifs (3 ou plus deviennent 2 pour marquer un paragraphe)
+            if (optLines) {
+                text = text.replace(/\n{3,}/g, '\n\n');
+            }
+
+            // 3. Convertir la ponctuation latine en ponctuation arabe
+            if (optPunctuation) {
+                text = text.replace(/\?/g, '؟');
+                text = text.replace(/;/g, '؛');
+                // Pour la virgule, on remplace la virgule latine par l'arabe (attention aux nombres si nécessaire, 
+                // mais en général en arabe on utilise la virgule arabe partout sauf dans les décimales)
+                text = text.replace(/,/g, '،');
+            }
+
+            // 4. Corriger les espaces autour de la ponctuation
+            if (optPunctSpaces) {
+                // Supprime l'espace AVANT la ponctuation: "mot ،" -> "mot،"
+                text = text.replace(/\s+([،؟؛!.:])/g, '$1');
+                
+                // Ajoute un espace APRÈS la ponctuation s'il n'y en a pas (et si ce n'est pas la fin du texte ni un guillemet/parenthèse fermante)
+                // /([،؟؛!.:])(?=[^\s"'\)\]}])/g
+                text = text.replace(/([،؟؛!.:])(?=[^\s"'\)\]}])/g, '$1 ');
+            }
+
+            // Trim final pour nettoyer le début et la fin globale
+            text = text.trim();
+
+            if (textarea.value !== text) {
+                textarea.value = text;
+                showToast("Texte nettoyé avec succès !");
+            } else {
+                showToast("Le texte est déjà propre.");
+            }
+        }
+
+        function clearText() {
+            document.getElementById('toolInput').value = '';
+            document.getElementById('toolInput').focus();
+        }
+
+        function copyText() {
+            const textarea = document.getElementById('toolInput');
+            if (!textarea.value.trim()) return;
+            
+            textarea.select();
+            navigator.clipboard.writeText(textarea.value).then(() => {
+                showToast("Copié dans le presse-papiers !");
+            });
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 2500);
+        }
+    </script>
+</body>
+</html>

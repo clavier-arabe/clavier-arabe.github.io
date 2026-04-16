@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convertisseur de Chiffres Arabes ↔ Européens</title>
+    <meta name="description" content="Convertissez instantanément les chiffres arabes orientaux (١٢٣٤٥) en chiffres européens (12345) et inversement, sans modifier le reste de votre texte.">
+    <meta name="keywords" content="convertisseur chiffres arabes, convertir chiffres orientaux, clavier chiffres arabes, transformer 12345 en arabe, transformer ١٢٣٤٥ en europeen, nombres arabes excel">
+    <meta name="author" content="Clavier Arabe">
+    <link rel="canonical" href="https://clavier-arabe.github.io/convertisseur-chiffres-arabes/">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://clavier-arabe.github.io/convertisseur-chiffres-arabes/">
+    <meta property="og:title" content="Convertisseur de Chiffres Arabes et Orientaux">
+    <meta property="og:description" content="Basculez facilement entre les formats de nombres occidentaux (123) et orientaux (١٢٣) dans vos textes.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .tool-header h1 { font-size: 1.8rem; color: #111827; margin-bottom: 8px; }
+        .tool-header p { color: var(--text-muted); font-size: 1rem; margin-bottom: 25px; }
+        
+        .tool-actions {
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 15px;
+        }
+
+        /* Panneau d'options */
+        .options-panel {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            gap: 20px;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            color: #374151;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+            padding: 8px 12px;
+            background: var(--bg-surface);
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            transition: 0.2s;
+            width: auto;
+        }
+
+        .radio-label:hover {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+        
+        .radio-label input[type="radio"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        /* Layout spécifique à 2 écrans (Avant/Après) pour cet outil */
+        .split-editor { display: flex; gap: 20px; margin-bottom: 15px; flex-wrap: wrap; }
+        .split-editor > div { flex: 1; min-width: 250px; }
+        .split-editor label { display: block; font-weight: 600; margin-bottom: 8px; color: #374151; font-family: 'Inter', sans-serif; }
+        
+        .split-textarea {
+            width: 100%; height: 200px; padding: 12px; font-size: 24px; border: 2px solid #d1d5db; 
+            border-radius: 8px; font-family: 'Amiri', serif; resize: vertical; outline: none; 
+            transition: 0.3s; background: #fdfdfd; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+            direction: rtl;
+        }
+        #outputBox { background: #f3f4f6; color: var(--primary); }
+        .split-textarea:focus { border-color: var(--primary); }
+
+        .content-section a:hover {
+            border-color: var(--primary) !important;
+            background: #eff6ff !important;
+            color: var(--primary) !important;
+            text-decoration: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .split-editor { flex-direction: column; gap: 10px; }
+            .split-textarea { height: 140px; font-size: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="full-width-header">
+        <div class="container">
+            <div class="grid-layout">
+                <div class="header-spacer"></div>
+                <div class="header-inner">
+                    <a href="/" class="logo"><span>Clavier Arabe</span> <span class="tiny"><i class="fa-solid fa-keyboard"></i></span></a>
+                    <a href="/" class="btn"><i class="fa-solid fa-keyboard"></i> Retour au Clavier</a>
+                </div>
+                <div class="header-spacer"></div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-content-area">
+        <div class="container">
+            <div class="grid-layout">
+                
+                <!-- Pub Gauche -->
+                <aside class="ad-sidebar left-ad"></aside>
+
+                <main class="main-panel">
+                    
+                    <!-- L'Outil -->
+                    <div class="boxed-section editor-card">
+                        <div class="tool-header">
+                            <h1>Convertisseur de Chiffres Arabes ↔ Européens</h1>
+                            <p>Collez votre texte contenant des numéros, dates ou prix. L'outil convertira instantanément les chiffres sans modifier les lettres autour.</p>
+                        </div>
+
+                        <div class="split-editor">
+                            <div>
+                                <label for="inputBox">1. Texte Original:</label>
+                                <textarea id="inputBox" class="split-textarea" placeholder="Collez votre texte ici" oninput="convertNumbers()"></textarea>
+                            </div>
+                            <div>
+                                <label for="outputBox">2. Résultat Converti:</label>
+                                <textarea id="outputBox" class="split-textarea" placeholder="Le résultat apparaîtra ici" readonly></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Options de Conversion -->
+                        <div class="options-panel">
+                            <label class="radio-label">
+                                <input type="radio" name="conversionMode" value="toWestern" checked onchange="convertNumbers()">
+                                1. Orientaux (١٢٣) ➔ Européens (123)
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="conversionMode" value="toEastern" onchange="convertNumbers()">
+                                2. Européens (123) ➔ Orientaux (١٢٣)
+                            </label>
+                        </div>
+
+                        <div class="tool-actions">
+                            <div class="toolbar-group">
+                                <button class="btn btn-primary" onclick="copyResult()">
+                                    <i class="fa-regular fa-copy"></i> Copier le résultat
+                                </button>
+                            </div>
+                            <div class="toolbar-group">
+                                <button class="btn btn-danger" onclick="clearText()">
+                                    <i class="fa-solid fa-trash-can"></i> Vider
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contenu SEO de l'Outil -->
+                    <article class="boxed-section content-section">
+                        <h2>Quelle est la différence entre les chiffres arabes et orientaux?</h2>
+                        <p>Dans le monde arabe, il existe deux manières distinctes d'écrire les nombres selon la région (Maghreb ou Machrek) et le système d'exploitation utilisé (Windows, Mac, iOS):</p>
+                        
+                        <ul>
+                            <li><strong>Les Chiffres Européens (0, 1, 2, 3...):</strong> Contrairement à leur nom, ces chiffres sont historiquement d'origine arabe (appelés <em>Chiffres Arabes Occidentaux</em> ou <em>Ghubari</em>). Ils sont aujourd'hui utilisés dans le monde entier, y compris dans les pays du Maghreb (Maroc, Algérie, Tunisie).</li>
+                            <li><strong>Les Chiffres Orientaux (٠, ١, ٢, ٣...):</strong> Également appelés "chiffres indo-arabes", ils sont la norme officielle en Égypte et dans tous les pays du Moyen-Orient (Arabie Saoudite, Émirats, Irak, Liban, etc.).</li>
+                        </ul>
+
+                        <h3>Pourquoi cet outil de conversion est-il indispensable?</h3>
+                        <p>La conversion manuelle des chiffres dans un long document ou une base de données peut prendre des heures. Notre <strong>Convertisseur de Nombres Arabes</strong> automatise ce processus pour vous de manière sécurisée et instantanée. Voici les cas d'utilisation les plus fréquents:</p>
+
+                        <p><strong>1. Erreur de calcul dans Excel ou Google Sheets:</strong><br>
+                        Si vous exportez une base de données de clients (numéros de téléphone, codes postaux, prix, dates) depuis un site web ou un CRM moyen-oriental, Excel ne reconnaîtra pas le format `١٢٣٤٥` comme une valeur numérique. Il les traitera comme du simple "texte". Résultat? Impossible de faire des sommes, des moyennes ou des graphiques. Utilisez l'option "Orientaux vers Européens" pour nettoyer vos cellules avant de les coller dans Excel.</p>
+
+                        <p><strong>2. Rédacteurs Web, Journalistes et Editeurs (SEO):</strong><br>
+                        Si vous rédigez un article officiel destiné à une audience au Moyen-Orient (journaux comme Al Jazeera ou Al Arabiya), les règles éditoriales exigent souvent l'utilisation stricte de la typographie `٠١٢٣٤٥٦٧٨٩`. Cet outil permet à un journaliste européen de taper son texte normalement avec un clavier AZERTY (123), puis de tout convertir en chiffres orientaux d'un seul clic.</p>
+                        
+                        <p><strong>3. Développement d'Applications et API:</strong><br>
+                        Les serveurs informatiques et les langages de programmation (PHP, Python, SQL) utilisent le système décimal européen (ASCII `0-9`) pour exécuter leur logique (validation de mots de passe, âge, numéros de carte de crédit). Convertir les entrées des utilisateurs arabes est une obligation en développement informatique.</p>
+
+                        <h3>Un traitement instantané et privé</h3>
+                        <p>L'algorithme de ce convertisseur scanne votre document, identifie chaque bloc Unicode correspondant aux chiffres (`\u0030-\u0039` ou `\u0660-\u0669`), et les remplace sans jamais toucher aux lettres arabes, à la ponctuation, ni aux sauts de ligne de votre paragraphe. Tout se passe localement dans votre navigateur (via Javascript): vos documents confidentiels ne sont jamais envoyés sur nos serveurs.</p>
+                        <div style="margin-top: 40px; padding-top: 25px; border-top: 2px dashed #e5e7eb;">
+                            <h3 style="font-size: 1.4rem; color: #111827; margin-bottom: 15px; margin-top: 0;">Découvrez nos outils gratuits pour l'Arabe</h3>
+                            <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 20px;">Simplifiez votre rédaction, votre apprentissage ou votre développement informatique grâce à notre suite d'outils spécialisés:</p>
+                            
+                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px;">
+                                
+                                <!-- Outils Principaux -->
+                                <a href="/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-keyboard" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Arabe Virtuel
+                                </a>
+                                <a href="/clavier-persan-farsi/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-language" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Persan & Ourdou
+                                </a>
+                                <a href="/clavier-maghrebin-darija/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-earth-africa" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Maghrébin (Darija)
+                                </a>
+                                
+                                <!-- Outils de Manipulation de Texte -->
+                                <a href="/suppresseur-harakat/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-eraser" style="color: var(--primary); width: 20px; text-align: center;"></i> Suppresseur de Harakat
+                                </a>
+                                <a href="/nettoyeur-texte/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-broom" style="color: var(--primary); width: 20px; text-align: center;"></i> Nettoyeur de Texte
+                                </a>
+                                <a href="/allongement-tatweel/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-text-width" style="color: var(--primary); width: 20px; text-align: center;"></i> Étirer Texte (Tatweel)
+                                </a>
+                                <a href="/convertisseur-ponctuation-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-question" style="color: var(--primary); width: 20px; text-align: center;"></i> Inverser la Ponctuation
+                                </a>
+                                <a href="/chercher-remplacer-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-magnifying-glass-arrow-right" style="color: var(--primary); width: 20px; text-align: center;"></i> Chercher/Remplacer (Tolérant)
+                                </a>
+                                <a href="/reparateur-texte-photoshop/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--primary); width: 20px; text-align: center;"></i> Réparateur Photoshop/Adobe
+                                </a>
+                                
+                                <!-- Outils de Données, Nombres et Programmation -->
+                                <a href="/convertisseur-chiffres-arabes/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-1" style="color: var(--primary); width: 20px; text-align: center;"></i> Chiffres (Orientaux ↔ Européens)
+                                </a>
+                                <a href="/nombres-en-lettres-tafqit/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-money-check-dollar" style="color: var(--primary); width: 20px; text-align: center;"></i> Chiffres en Lettres (Tafqit)
+                                </a>
+                                <a href="/compteur-mots-caracteres/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-calculator" style="color: var(--primary); width: 20px; text-align: center;"></i> Compteur de Mots
+                                </a>
+                                <a href="/trieur-alphabetique/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-arrow-down-a-z" style="color: var(--primary); width: 20px; text-align: center;"></i> Trieur Alphabétique Arabe
+                                </a>
+                                <a href="/analyseur-frequence-mots-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-chart-simple" style="color: var(--primary); width: 20px; text-align: center;"></i> Analyseur de Densité (SEO)
+                                </a>
+                                <a href="/extracteur-texte/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-filter" style="color: var(--primary); width: 20px; text-align: center;"></i> Extracteur de Texte Arabe
+                                </a>
+                                <a href="/encodeur-decodeur-url-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-link" style="color: var(--primary); width: 20px; text-align: center;"></i> Décodeur d'URL Arabe
+                                </a>
+                                <a href="/generateur-lorem-ipsum-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-paragraph" style="color: var(--primary); width: 20px; text-align: center;"></i> Générateur Lorem Ipsum
+                                </a>
+
+                                <!-- Outils Divers et Accessibilité -->
+                                <a href="/lecteur-texte-arabe-vocal/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-volume-high" style="color: var(--primary); width: 20px; text-align: center;"></i> Lecteur Vocal (TTS)
+                                </a>
+                                <a href="/convertisseur-arabe-braille/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-braille" style="color: var(--primary); width: 20px; text-align: center;"></i> Traducteur Arabe ➔ Braille
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                </main>
+
+                <!-- Pub Droite -->
+                <aside class="ad-sidebar right-ad"></aside>
+
+            </div>
+        </div>
+    </div>
+
+    <footer class="full-width-footer">
+        <div class="container">
+            <div class="grid-layout">
+                <div class="footer-spacer"></div>
+                <div class="footer-inner">
+                    <div class="footer-links">
+                        <a href="/privacy/">Politique de Confidentialité</a>
+                        <a href="/cookies/">Politique des Cookies</a>
+                        <a href="/terms/">Conditions d'Utilisation</a>
+                        <a href="/contact/">Contact</a>
+                    </div>
+                    <div>&copy; 2026 Clavier Arabe. Tous droits réservés.</div>
+                </div>
+                <div class="footer-spacer"></div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast">Action réussie !</div>
+
+    <!-- SCRIPT DU CONVERTISSEUR DE CHIFFRES -->
+    <script>
+        // Tables de mapping entre les deux systèmes
+        const westernNumbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+        const easternNumbers = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+
+        function convertNumbers() {
+            const input = document.getElementById('inputBox').value;
+            const outputBox = document.getElementById('outputBox');
+            
+            if (!input) {
+                outputBox.value = '';
+                return;
+            }
+
+            const conversionMode = document.querySelector('input[name="conversionMode"]:checked').value;
+            let result = input;
+
+            if (conversionMode === 'toWestern') {
+                // Remplacer chaque chiffre oriental par son équivalent occidental
+                for (let i = 0; i < 10; i++) {
+                    // Regex global pour trouver toutes les instances du chiffre arabe oriental
+                    const easternRegex = new RegExp(easternNumbers[i], 'g');
+                    result = result.replace(easternRegex, westernNumbers[i]);
+                }
+            } 
+            else if (conversionMode === 'toEastern') {
+                // Remplacer chaque chiffre occidental par son équivalent oriental
+                for (let i = 0; i < 10; i++) {
+                    const westernRegex = new RegExp(westernNumbers[i], 'g');
+                    result = result.replace(westernRegex, easternNumbers[i]);
+                }
+            }
+            
+            outputBox.value = result;
+        }
+
+        function clearText() {
+            document.getElementById('inputBox').value = '';
+            document.getElementById('outputBox').value = '';
+            document.getElementById('inputBox').focus();
+        }
+
+        function copyResult() {
+            const outputBox = document.getElementById('outputBox');
+            if (!outputBox.value.trim()) return;
+            
+            outputBox.select();
+            navigator.clipboard.writeText(outputBox.value).then(() => {
+                showToast("Nombres copiés avec succès !");
+            });
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 2500);
+        }
+    </script>
+</body>
+</html>

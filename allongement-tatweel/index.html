@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter ou Supprimer le Tatweel (Kashida) | Étirer le Texte Arabe</title>
+    <meta name="description" content="Outil gratuit pour étirer les mots arabes avec le Tatweel (Kashida) pour un style calligraphique, ou pour nettoyer un texte en supprimant les allongements.">
+    <meta name="keywords" content="tatweel, kashida, allongement arabe, etirer mot arabe, calligraphie arabe texte, supprimer tatweel, tiret arabe, formater texte arabe">
+    <meta name="author" content="Clavier Arabe">
+    <link rel="canonical" href="https://clavier-arabe.github.io/allongement-tatweel/">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://clavier-arabe.github.io/allongement-tatweel/">
+    <meta property="og:title" content="Gestionnaire de Tatweel (Kashida) Arabe">
+    <meta property="og:description" content="Ajoutez des allongements pour donner un style poétique à vos mots arabes, ou supprimez-les pour nettoyer votre texte.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .tool-header h1 { font-size: 1.8rem; color: #111827; margin-bottom: 8px; }
+        .tool-header p { color: var(--text-muted); font-size: 1rem; margin-bottom: 25px; }
+        
+        .tool-actions {
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 15px;
+        }
+
+        /* Panneau d'options */
+        .options-panel {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+        
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .radio-title {
+            font-weight: 700;
+            color: #111827;
+            font-size: 0.95rem;
+            margin-bottom: 5px;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 5px;
+        }
+        
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            color: #374151;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .radio-label input[type="radio"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        /* Layout spécifique à 2 écrans (Avant/Après) pour cet outil */
+        .split-editor { display: flex; gap: 20px; margin-bottom: 15px; flex-wrap: wrap; }
+        .split-editor > div { flex: 1; min-width: 250px; }
+        .split-editor label { display: block; font-weight: 600; margin-bottom: 8px; color: #374151; font-family: 'Inter', sans-serif; }
+        
+        .split-textarea {
+            width: 100%; height: 200px; padding: 12px; font-size: 24px; border: 2px solid #d1d5db; 
+            border-radius: 8px; font-family: 'Amiri', serif; resize: vertical; outline: none; 
+            transition: 0.3s; background: #fdfdfd; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+            direction: rtl;
+        }
+        #outputBox { background: #f3f4f6; color: var(--primary); }
+        .split-textarea:focus { border-color: var(--primary); }
+
+        .content-section a:hover {
+            border-color: var(--primary) !important;
+            background: #eff6ff !important;
+            color: var(--primary) !important;
+            text-decoration: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .split-editor { flex-direction: column; gap: 10px; }
+            .split-textarea { height: 140px; font-size: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="full-width-header">
+        <div class="container">
+            <div class="grid-layout">
+                <div class="header-spacer"></div>
+                <div class="header-inner">
+                    <a href="/" class="logo"><span>Clavier Arabe</span> <span class="tiny"><i class="fa-solid fa-keyboard"></i></span></a>
+                    <a href="/" class="btn"><i class="fa-solid fa-keyboard"></i> Retour au Clavier</a>
+                </div>
+                <div class="header-spacer"></div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-content-area">
+        <div class="container">
+            <div class="grid-layout">
+                
+                <!-- Pub Gauche -->
+                <aside class="ad-sidebar left-ad"></aside>
+
+                <main class="main-panel">
+                    
+                    <!-- L'Outil -->
+                    <div class="boxed-section editor-card">
+                        <div class="tool-header">
+                            <h1>Allongement Arabe (Tatweel / Kashida)</h1>
+                            <p>Étirez vos mots pour un style calligraphique ou nettoyez un texte en supprimant ses allongements excessifs.</p>
+                        </div>
+
+                        <div class="split-editor">
+                            <div>
+                                <label for="inputBox">1. Votre Texte:</label>
+                                <textarea id="inputBox" class="split-textarea" placeholder="مرحبا أو مـــــرحـــــبـــــا" oninput="processTatweel()"></textarea>
+                            </div>
+                            <div>
+                                <label for="outputBox">2. Résultat:</label>
+                                <textarea id="outputBox" class="split-textarea" readonly></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Options de Tatweel -->
+                        <div class="options-panel">
+                            <div class="radio-group">
+                                <div class="radio-title">Mode d'action</div>
+                                <label class="radio-label">
+                                    <input type="radio" name="mode" value="remove" checked onchange="processTatweel()">
+                                    Supprimer les Tatweels (Nettoyer)
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="mode" value="add" onchange="processTatweel()">
+                                    Ajouter des Tatweels (Étirer)
+                                </label>
+                            </div>
+                            
+                            <div class="radio-group" id="lengthOptions" style="opacity: 0.5; pointer-events: none;">
+                                <div class="radio-title">Niveau d'étirement</div>
+                                <label class="radio-label">
+                                    <input type="radio" name="length" value="1" checked onchange="processTatweel()">
+                                    Léger (ـ)
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="length" value="3" onchange="processTatweel()">
+                                    Moyen (ـــ)
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="length" value="5" onchange="processTatweel()">
+                                    Long (ـــــ)
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="tool-actions">
+                            <div class="toolbar-group">
+                                <button class="btn btn-primary" onclick="copyResult()">
+                                    <i class="fa-regular fa-copy"></i> Copier le résultat
+                                </button>
+                            </div>
+                            <div class="toolbar-group">
+                                <button class="btn btn-danger" onclick="clearText()">
+                                    <i class="fa-solid fa-trash-can"></i> Vider
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contenu SEO de l'Outil -->
+                    <article class="boxed-section content-section">
+                        <h2>Qu'est-ce que le Tatweel (ou Kashida) en Arabe?</h2>
+                        <p>Dans la typographie et la calligraphie arabes, le <strong>Tatweel</strong> (تطويل) ou <strong>Kashida</strong> (کشیده) est un caractère spécial représenté par une ligne horizontale ( <strong>ـ</strong> ). Contrairement aux lettres de l'alphabet, le Tatweel n'a aucune valeur phonétique: il est silencieux. Son seul rôle est d'allonger la connexion entre deux lettres.</p>
+                        
+                        <h3>1. L'utilisation esthétique (Calligraphie et Réseaux Sociaux)</h3>
+                        <p>Sur les réseaux sociaux comme Instagram, X (Twitter) ou TikTok, les utilisateurs aiment étirer leurs mots pour donner un style poétique, dramatique ou élégant à leurs publications. Par exemple, le mot "Bonjour" (<code>سلام</code>) peut être transformé en <code>ســــلام</code>. Notre outil vous permet d'appliquer cet effet automatiquement et intelligemment à tout un paragraphe, en choisissant la longueur de l'étirement (Léger, Moyen, Long).</p>
+                        <p><em>Note technique: Notre algorithme est intelligent. Il sait que certaines lettres arabes ne se connectent pas par la gauche (comme le Alif ا, le Dal د ou le Waw و) et ne placera jamais de Tatweel après ces lettres, respectant ainsi parfaitement la grammaire visuelle arabe.</em></p>
+
+                        <h3>2. L'utilisation typographique (Justification de texte)</h3>
+                        <p>Dans les journaux, les livres et les logiciels de traitement de texte (comme Microsoft Word), le Tatweel est utilisé pour la <strong>justification du texte</strong>. Contrairement au français ou à l'anglais où la justification se fait en agrandissant les espaces vides entre les mots, la justification arabe se fait en étirant les lettres elles-mêmes à l'aide de Kashidas. Cela crée des blocs de texte parfaitement alignés des deux côtés.</p>
+
+                        <h3>3. Le nettoyage de texte (SEO et Bases de données)</h3>
+                        <p>Si le Tatweel est magnifique visuellement, il est le pire ennemi de l'informatique et du SEO (Référencement naturel). Si vous cherchez le mot "مرحبا" dans une base de données, l'ordinateur ne trouvera pas "مـــرحـــبـــا" car les codes Unicode sont différents (le tiret est considéré comme un caractère à part entière).</p>
+                        <p>Si vous copiez un texte depuis un vieux site web ou un fichier PDF justifié, utilisez la fonction <strong>"Supprimer les Tatweels (Nettoyer)"</strong> de notre outil. Il scannera votre texte et retirera instantanément le code Unicode <code>U+0640</code>, vous rendant un texte pur, parfait pour l'analyse de données (Data Science), le NLP ou la publication Web.</p>
+                        <div style="margin-top: 40px; padding-top: 25px; border-top: 2px dashed #e5e7eb;">
+                            <h3 style="font-size: 1.4rem; color: #111827; margin-bottom: 15px; margin-top: 0;">Découvrez nos outils gratuits pour l'Arabe</h3>
+                            <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 20px;">Simplifiez votre rédaction, votre apprentissage ou votre développement informatique grâce à notre suite d'outils spécialisés:</p>
+                            
+                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px;">
+                                
+                                <!-- Outils Principaux -->
+                                <a href="/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-keyboard" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Arabe Virtuel
+                                </a>
+                                <a href="/clavier-persan-farsi/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-language" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Persan & Ourdou
+                                </a>
+                                <a href="/clavier-maghrebin-darija/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-earth-africa" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Maghrébin (Darija)
+                                </a>
+                                
+                                <!-- Outils de Manipulation de Texte -->
+                                <a href="/suppresseur-harakat/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-eraser" style="color: var(--primary); width: 20px; text-align: center;"></i> Suppresseur de Harakat
+                                </a>
+                                <a href="/nettoyeur-texte/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-broom" style="color: var(--primary); width: 20px; text-align: center;"></i> Nettoyeur de Texte
+                                </a>
+                                <a href="/allongement-tatweel/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-text-width" style="color: var(--primary); width: 20px; text-align: center;"></i> Étirer Texte (Tatweel)
+                                </a>
+                                <a href="/convertisseur-ponctuation-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-question" style="color: var(--primary); width: 20px; text-align: center;"></i> Inverser la Ponctuation
+                                </a>
+                                <a href="/chercher-remplacer-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-magnifying-glass-arrow-right" style="color: var(--primary); width: 20px; text-align: center;"></i> Chercher/Remplacer (Tolérant)
+                                </a>
+                                <a href="/reparateur-texte-photoshop/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--primary); width: 20px; text-align: center;"></i> Réparateur Photoshop/Adobe
+                                </a>
+                                
+                                <!-- Outils de Données, Nombres et Programmation -->
+                                <a href="/convertisseur-chiffres-arabes/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-1" style="color: var(--primary); width: 20px; text-align: center;"></i> Chiffres (Orientaux ↔ Européens)
+                                </a>
+                                <a href="/nombres-en-lettres-tafqit/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-money-check-dollar" style="color: var(--primary); width: 20px; text-align: center;"></i> Chiffres en Lettres (Tafqit)
+                                </a>
+                                <a href="/compteur-mots-caracteres/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-calculator" style="color: var(--primary); width: 20px; text-align: center;"></i> Compteur de Mots
+                                </a>
+                                <a href="/trieur-alphabetique/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-arrow-down-a-z" style="color: var(--primary); width: 20px; text-align: center;"></i> Trieur Alphabétique Arabe
+                                </a>
+                                <a href="/analyseur-frequence-mots-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-chart-simple" style="color: var(--primary); width: 20px; text-align: center;"></i> Analyseur de Densité (SEO)
+                                </a>
+                                <a href="/extracteur-texte/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-filter" style="color: var(--primary); width: 20px; text-align: center;"></i> Extracteur de Texte Arabe
+                                </a>
+                                <a href="/encodeur-decodeur-url-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-link" style="color: var(--primary); width: 20px; text-align: center;"></i> Décodeur d'URL Arabe
+                                </a>
+                                <a href="/generateur-lorem-ipsum-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-paragraph" style="color: var(--primary); width: 20px; text-align: center;"></i> Générateur Lorem Ipsum
+                                </a>
+
+                                <!-- Outils Divers et Accessibilité -->
+                                <a href="/lecteur-texte-arabe-vocal/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-volume-high" style="color: var(--primary); width: 20px; text-align: center;"></i> Lecteur Vocal (TTS)
+                                </a>
+                                <a href="/convertisseur-arabe-braille/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-braille" style="color: var(--primary); width: 20px; text-align: center;"></i> Traducteur Arabe ➔ Braille
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                </main>
+
+                <!-- Pub Droite -->
+                <aside class="ad-sidebar right-ad"></aside>
+
+            </div>
+        </div>
+    </div>
+
+    <footer class="full-width-footer">
+        <div class="container">
+            <div class="grid-layout">
+                <div class="footer-spacer"></div>
+                <div class="footer-inner">
+                    <div class="footer-links">
+                        <a href="/privacy/">Politique de Confidentialité</a>
+                        <a href="/cookies/">Politique des Cookies</a>
+                        <a href="/terms/">Conditions d'Utilisation</a>
+                        <a href="/contact/">Contact</a>
+                    </div>
+                    <div>&copy; 2026 Clavier Arabe. Tous droits réservés.</div>
+                </div>
+                <div class="footer-spacer"></div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast">Action réussie !</div>
+
+    <!-- SCRIPT DU TATWEEL -->
+    <script>
+        // Gestion de l'UI pour griser/activer les options de longueur
+        const modeRadios = document.querySelectorAll('input[name="mode"]');
+        const lengthOptions = document.getElementById('lengthOptions');
+
+        modeRadios.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                if(e.target.value === 'add') {
+                    lengthOptions.style.opacity = '1';
+                    lengthOptions.style.pointerEvents = 'auto';
+                } else {
+                    lengthOptions.style.opacity = '0.5';
+                    lengthOptions.style.pointerEvents = 'none';
+                }
+            });
+        });
+
+        // Constantes linguistiques
+        const TATWEEL_CHAR = '\u0640'; // ـ
+        // Lettres arabes qui acceptent une connexion PAR LA GAUCHE (et donc qui peuvent être suivies d'un Tatweel)
+        const connectingLetters = /[بتثجحخسشصضطظعغفقكلمنهيئپچژگڤڭ]/;
+        // Regex pour identifier si le caractère suivant est bien une lettre arabe (et non un espace ou une ponctuation)
+        const arabicLetters = /[\u0621-\u064A\u0671-\u06D3]/;
+        // Regex pour sauter les Harakat (diacritiques) afin de savoir quelle est la vraie lettre suivante
+        const harakat = /[\u064B-\u065F\u0670]/;
+
+        function processTatweel() {
+            const input = document.getElementById('inputBox').value;
+            const outputBox = document.getElementById('outputBox');
+            
+            if (!input) {
+                outputBox.value = '';
+                return;
+            }
+
+            const mode = document.querySelector('input[name="mode"]:checked').value;
+            
+            if (mode === 'remove') {
+                // Remplacement très simple: supprimer tous les caractères Tatweel
+                outputBox.value = input.replace(new RegExp(TATWEEL_CHAR, 'g'), '');
+            } 
+            else if (mode === 'add') {
+                // 1. On commence par nettoyer pour ne pas empiler sur des tatweels existants
+                let cleanInput = input.replace(new RegExp(TATWEEL_CHAR, 'g'), '');
+                
+                // 2. On récupère le nombre de Tatweels à insérer
+                const tatweelCount = parseInt(document.querySelector('input[name="length"]:checked').value);
+                const stretch = TATWEEL_CHAR.repeat(tatweelCount);
+                
+                let result = '';
+                
+                // Algorithme de connexion
+                for (let i = 0; i < cleanInput.length; i++) {
+                    result += cleanInput[i];
+                    
+                    // Si le caractère actuel est une lettre qui se connecte par la gauche
+                    if (connectingLetters.test(cleanInput[i])) {
+                        
+                        // Il faut vérifier si la *prochaine* vraie lettre est une lettre arabe.
+                        // On doit "sauter" les éventuelles Harakat pour voir la lettre suivante.
+                        let j = i + 1;
+                        let foundHarakat = '';
+                        
+                        while (j < cleanInput.length && harakat.test(cleanInput[j])) {
+                            foundHarakat += cleanInput[j];
+                            j++;
+                        }
+                        
+                        // Si la prochaine vraie lettre est bien arabe, on peut étirer
+                        if (j < cleanInput.length && arabicLetters.test(cleanInput[j])) {
+                            // On ajoute les Harakat de la lettre actuelle (si elle en a) AVANT le Tatweel.
+                            // Techniquement, les Harakat s'attachent à la consonne, le Tatweel vient après.
+                            result += foundHarakat + stretch;
+                            i = j - 1; // On avance l'index pour sauter les Harakat qu'on vient de copier
+                        }
+                    }
+                }
+                
+                outputBox.value = result;
+            }
+        }
+
+        function clearText() {
+            document.getElementById('inputBox').value = '';
+            document.getElementById('outputBox').value = '';
+            document.getElementById('inputBox').focus();
+        }
+
+        function copyResult() {
+            const outputBox = document.getElementById('outputBox');
+            if (!outputBox.value.trim()) return;
+            
+            outputBox.select();
+            navigator.clipboard.writeText(outputBox.value).then(() => {
+                showToast("Résultat copié avec succès !");
+            });
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 2500);
+        }
+    </script>
+</body>
+</html>

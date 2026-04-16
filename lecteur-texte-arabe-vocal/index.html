@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecteur de Texte Arabe (Text-to-Speech) | Synthèse Vocale Gratuite</title>
+    <meta name="description" content="Faites lire vos textes arabes à voix haute gratuitement. Outil de synthèse vocale (Text-to-Speech) arabe avec réglage de la vitesse et de la prononciation.">
+    <meta name="keywords" content="lecteur texte arabe, lire texte arabe voix haute, tts arabic, text to speech arabe, prononciation arabe, synthese vocale arabe gratuite, ecouter texte arabe">
+    <meta name="author" content="Clavier Arabe">
+    <link rel="canonical" href="https://clavier-arabe.github.io/lecteur-texte-arabe-vocal/">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://clavier-arabe.github.io/lecteur-texte-arabe-vocal/">
+    <meta property="og:title" content="Lecteur de Texte Arabe à Voix Haute (TTS)">
+    <meta property="og:description" content="Écoutez la prononciation de n'importe quel texte arabe grâce à notre lecteur vocal en ligne.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .tool-header h1 { font-size: 1.8rem; color: #111827; margin-bottom: 8px; }
+        .tool-header p { color: var(--text-muted); font-size: 1rem; margin-bottom: 25px; }
+        
+        .tool-actions {
+            display: flex; justify-content: center; align-items: center;
+            flex-wrap: wrap; gap: 15px; padding-top: 20px; border-top: 1px solid #e5e7eb;
+        }
+
+        /* Panneau de Contrôles Vocaux */
+        .options-panel {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .slider-group label {
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.95rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .slider-value {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        /* Style des sliders (Range Input) */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 18px;
+            width: 18px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            margin-top: -6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 6px;
+            cursor: pointer;
+            background: #d1d5db;
+            border-radius: 3px;
+        }
+        input[type=range]:focus { outline: none; }
+        
+        /* Selecteur de voix */
+        .select-voice {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            outline: none;
+            background: white;
+            cursor: pointer;
+        }
+        .select-voice:focus { border-color: var(--primary); }
+
+        /* Animation visuelle de lecture */
+        .audio-visualizer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            height: 30px;
+            margin-bottom: 15px;
+            opacity: 0; /* Caché par défaut */
+            transition: opacity 0.3s;
+        }
+        .audio-visualizer.playing { opacity: 1; }
+        .bar {
+            width: 6px;
+            height: 100%;
+            background: var(--primary);
+            border-radius: 3px;
+            animation: bounce 1s infinite ease-in-out;
+        }
+        .bar:nth-child(1) { animation-delay: 0.0s; height: 40%; }
+        .bar:nth-child(2) { animation-delay: 0.1s; height: 100%; }
+        .bar:nth-child(3) { animation-delay: 0.2s; height: 60%; }
+        .bar:nth-child(4) { animation-delay: 0.3s; height: 80%; }
+        .bar:nth-child(5) { animation-delay: 0.4s; height: 50%; }
+        
+        @keyframes bounce {
+            0%, 100% { transform: scaleY(0.5); }
+            50% { transform: scaleY(1); }
+        }
+
+        /* Boutons de lecture massifs */
+        .btn-play {
+            background: #10b981; color: white; border-color: #059669; border-bottom-color: #047857;
+            padding: 12px 30px; font-size: 1.1rem;
+        }
+        .btn-play:hover { background: #059669; }
+        .btn-pause { background: #f59e0b; color: white; border-color: #d97706; border-bottom-color: #b45309; }
+        .btn-pause:hover { background: #d97706; }
+        .btn-stop { background: #ef4444; color: white; border-color: #dc2626; border-bottom-color: #b91c1c; }
+        .btn-stop:hover { background: #dc2626; }
+        
+        /* Message d'erreur si TTS non supporté */
+        #ttsError {
+            display: none;
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #f87171;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .content-section a:hover {
+            border-color: var(--primary) !important;
+            background: #eff6ff !important;
+            color: var(--primary) !important;
+            text-decoration: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .options-panel { grid-template-columns: 1fr; gap: 15px; }
+            .tool-actions { flex-direction: column; gap: 10px; }
+            .btn { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="full-width-header">
+        <div class="container">
+            <div class="grid-layout">
+                <div class="header-spacer"></div>
+                <div class="header-inner">
+                    <a href="/" class="logo"><span>Clavier Arabe</span> <span class="tiny"><i class="fa-solid fa-keyboard"></i></span></a>
+                    <a href="/" class="btn"><i class="fa-solid fa-keyboard"></i> Retour au Clavier</a>
+                </div>
+                <div class="header-spacer"></div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-content-area">
+        <div class="container">
+            <div class="grid-layout">
+                
+                <!-- Pub Gauche -->
+                <aside class="ad-sidebar left-ad"></aside>
+
+                <main class="main-panel">
+                    
+                    <!-- L'Outil -->
+                    <div class="boxed-section editor-card">
+                        <div class="tool-header">
+                            <h1>Lecteur de Texte Arabe (Synthèse Vocale)</h1>
+                            <p>Collez votre texte en arabe. Sélectionnez une voix, ajustez la vitesse, et laissez votre navigateur le lire à voix haute avec une prononciation naturelle.</p>
+                        </div>
+
+                        <div id="ttsError">
+                            <i class="fa-solid fa-triangle-exclamation"></i> Votre navigateur ne supporte pas la synthèse vocale arabe. Veuillez utiliser la dernière version de Chrome, Safari ou Edge.
+                        </div>
+
+                        <textarea id="toolInput" class="text-area-input tool-textarea" style="margin-bottom: 15px;" placeholder="السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ..."></textarea>
+                        
+                        <!-- Options Vocales -->
+                        <div class="options-panel">
+                            <div class="slider-group" style="grid-column: 1 / -1;">
+                                <label for="voiceSelect">Sélection de la voix (Dépend de votre appareil):</label>
+                                <select id="voiceSelect" class="select-voice">
+                                    <option value="">Chargement des voix arabes...</option>
+                                </select>
+                            </div>
+                            
+                            <div class="slider-group">
+                                <label for="rateSlider">Vitesse de lecture: <span id="rateValue" class="slider-value">1.0x</span></label>
+                                <input type="range" id="rateSlider" min="0.5" max="2" value="1" step="0.1" oninput="updateSliderValue('rateValue', this.value + 'x')">
+                            </div>
+
+                            <div class="slider-group">
+                                <label for="pitchSlider">Tonalité (Grave / Aigu): <span id="pitchValue" class="slider-value">1.0</span></label>
+                                <input type="range" id="pitchSlider" min="0" max="2" value="1" step="0.1" oninput="updateSliderValue('pitchValue', this.value)">
+                            </div>
+                        </div>
+
+                        <!-- Accordéon d'aide (Expandable Help Section) -->
+                        <details style="margin-bottom: 20px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; transition: all 0.3s ease;">
+                            <summary style="padding: 12px 15px; font-weight: 600; color: #374151; cursor: pointer; user-select: none; font-size: 0.95rem; list-style-position: inside; outline: none;">
+                                Liste vide ou aucune voix arabe? Cliquez ici pour résoudre le problème.
+                            </summary>
+                            <div style="padding: 15px; padding-top: 0; font-size: 0.9rem; color: #374151; line-height: 1.5; border-top: 1px solid #e5e7eb; margin-top: 5px; padding-top: 15px;">
+                                Si votre appareil n'a pas le module vocal arabe installé par défaut, vous pouvez l'ajouter gratuitement via les paramètres officiels de votre système:
+                                <ul style="margin-top: 10px; margin-left: 20px;">
+                                    <li style="margin-bottom: 5px;"><strong>Windows:</strong> Paramètres > Heure et langue > Voix > <a href="ms-settings:speech" target="_blank" style="color: var(--primary); text-decoration: underline;">Ajouter des voix</a> (Cherchez Arabe Saudi/Egypt).</li>
+                                    <li style="margin-bottom: 5px;"><strong>Mac / iOS:</strong> Réglages > Accessibilité > Contenu lu > Voix > Arabe.</li>
+                                    <li><strong>Android:</strong> Paramètres > Accessibilité > Synthèse vocale > Moteur Google > Installer les données vocales.</li>
+                                </ul>
+                                <em style="display: block; margin-top: 10px; font-size: 0.85rem;">Note: Actualisez cette page (F5) après avoir installé la voix.</em>
+                            </div>
+                        </details>
+
+                        <!-- Visualiseur Audio -->
+                        <div class="audio-visualizer" id="visualizer">
+                            <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                        </div>
+
+                        <div class="tool-actions">
+                            <button class="btn btn-play" id="btnPlay" onclick="speakText()">
+                                <i class="fa-solid fa-play"></i> Lire le texte
+                            </button>
+                            <button class="btn btn-pause" id="btnPause" onclick="pauseText()" disabled style="opacity: 0.5;">
+                                <i class="fa-solid fa-pause"></i> Pause
+                            </button>
+                            <button class="btn btn-stop" id="btnStop" onclick="stopText()" disabled style="opacity: 0.5;">
+                                <i class="fa-solid fa-stop"></i> Arrêter
+                            </button>
+                            <button class="btn" onclick="clearText()" style="margin-left: auto;">
+                                <i class="fa-solid fa-trash-can"></i> Vider
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Contenu SEO de l'Outil -->
+                    <article class="boxed-section content-section">
+                        <h2>Qu'est-ce que le Text-to-Speech (TTS) Arabe?</h2>
+                        <p>La Synthèse Vocale, ou <strong>Text-to-Speech (TTS)</strong>, est une technologie intelligente qui permet à un ordinateur ou un smartphone de convertir un texte écrit en une parole naturelle générée par une voix artificielle. Cet outil est la solution idéale pour écouter un article, vérifier une prononciation ou assister les personnes malvoyantes.</p>
+
+                        <h3>Comment le navigateur lit-il l'Arabe?</h3>
+                        <p>Les systèmes d'exploitation modernes (Windows, macOS, iOS, Android) intègrent nativement des moteurs vocaux multilingues, incluant la langue arabe (souvent des voix féminines et masculines comme "Majed" ou "Tarik" selon la région). <strong>Cet outil se connecte directement au moteur vocal de votre propre appareil.</strong> C'est la garantie que l'audio généré est ultra-rapide, sans temps de chargement, et 100% respectueux de votre vie privée (aucun fichier audio n'est créé ni stocké sur nos serveurs).</p>
+
+                        <h3>Un outil parfait pour l'apprentissage de la prononciation</h3>
+                        <p>L'arabe est une langue phonétique stricte. Si vous apprenez la langue, la lecture de certains textes classiques peut s'avérer difficile sans l'aide d'un professeur. Notre Lecteur de Texte Arabe est un compagnon de révision parfait:</p>
+                        <ul>
+                            <li><strong>Vitesse réglable:</strong> Utilisez la barre "Vitesse de lecture" (de 0.5x à 2.0x) pour ralentir la prononciation du robot. Une vitesse de 0.7x est idéale pour analyser la façon dont les mots s'enchaînent ou comment le "Alif Lam" (ال) est assimilé par une lettre solaire.</li>
+                            <li><strong>Respect des Harakat:</strong> Si vous collez un texte brut sans voyelles (ex: <code>مدرسة</code>), le moteur vocal devinera la prononciation selon le contexte (Machine Learning intégré à Google/Apple). Mais si vous collez un texte avec <strong>Harakat (Tashkeel)</strong> (ex: <code>مَدْرَسَةٌ</code>), le robot lira chaque voyelle avec une précision absolue, incluant le Tanween (on, an, in).</li>
+                        </ul>
+
+                        <h3>Les voix diffèrent selon votre appareil</h3>
+                        <p>La qualité, l'accent et le ton de la voix varient fortement selon l'appareil que vous utilisez. Les iPhone et Mac utilisent les voix Siri (très fluides), tandis qu'un PC Windows utilisera Microsoft Voices. Les utilisateurs de Google Chrome (sur Android ou PC) auront accès aux voix cloud de Google, réputées pour être parmi les plus naturelles et réalistes au monde pour la langue arabe (Dialecte saoudien, émirati ou égyptien selon la configuration).</p>
+
+                        <h3>Que faire si l'outil ne fonctionne pas?</h3>
+                        <p>Si la voix ne se déclenche pas, c'est généralement pour l'une de ces raisons:</p>
+                        <ol>
+                            <li>Votre texte n'est pas en langue arabe. Le moteur vocal sélectionné sautera le texte latin (français/anglais). N'hésitez pas à utiliser notre <a href="/extracteur-texte/">Extracteur de Texte Arabe</a> pour nettoyer d'abord votre document.</li>
+                            <li>Votre appareil est en "Mode Silencieux" ou le volume de l'onglet du navigateur est coupé. Vérifiez vos paramètres de son.</li>
+                            <li>Vous utilisez un navigateur obsolète. Nous recommandons Google Chrome, Safari, ou Microsoft Edge mis à jour.</li>
+                        </ol>
+                        <div style="margin-top: 40px; padding-top: 25px; border-top: 2px dashed #e5e7eb;">
+                            <h3 style="font-size: 1.4rem; color: #111827; margin-bottom: 15px; margin-top: 0;">Découvrez nos outils gratuits pour l'Arabe</h3>
+                            <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 20px;">Simplifiez votre rédaction, votre apprentissage ou votre développement informatique grâce à notre suite d'outils spécialisés:</p>
+                            
+                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px;">
+                                
+                                <!-- Outils Principaux -->
+                                <a href="/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-keyboard" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Arabe Virtuel
+                                </a>
+                                <a href="/clavier-persan-farsi/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-language" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Persan & Ourdou
+                                </a>
+                                <a href="/clavier-maghrebin-darija/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-earth-africa" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Maghrébin (Darija)
+                                </a>
+                                
+                                <!-- Outils de Manipulation de Texte -->
+                                <a href="/suppresseur-harakat/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-eraser" style="color: var(--primary); width: 20px; text-align: center;"></i> Suppresseur de Harakat
+                                </a>
+                                <a href="/nettoyeur-texte/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-broom" style="color: var(--primary); width: 20px; text-align: center;"></i> Nettoyeur de Texte
+                                </a>
+                                <a href="/allongement-tatweel/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-text-width" style="color: var(--primary); width: 20px; text-align: center;"></i> Étirer Texte (Tatweel)
+                                </a>
+                                <a href="/convertisseur-ponctuation-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-question" style="color: var(--primary); width: 20px; text-align: center;"></i> Inverser la Ponctuation
+                                </a>
+                                <a href="/chercher-remplacer-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-magnifying-glass-arrow-right" style="color: var(--primary); width: 20px; text-align: center;"></i> Chercher/Remplacer (Tolérant)
+                                </a>
+                                <a href="/reparateur-texte-photoshop/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--primary); width: 20px; text-align: center;"></i> Réparateur Photoshop/Adobe
+                                </a>
+                                
+                                <!-- Outils de Données, Nombres et Programmation -->
+                                <a href="/convertisseur-chiffres-arabes/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-1" style="color: var(--primary); width: 20px; text-align: center;"></i> Chiffres (Orientaux ↔ Européens)
+                                </a>
+                                <a href="/nombres-en-lettres-tafqit/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-money-check-dollar" style="color: var(--primary); width: 20px; text-align: center;"></i> Chiffres en Lettres (Tafqit)
+                                </a>
+                                <a href="/compteur-mots-caracteres/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-calculator" style="color: var(--primary); width: 20px; text-align: center;"></i> Compteur de Mots
+                                </a>
+                                <a href="/trieur-alphabetique/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-arrow-down-a-z" style="color: var(--primary); width: 20px; text-align: center;"></i> Trieur Alphabétique Arabe
+                                </a>
+                                <a href="/analyseur-frequence-mots-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-chart-simple" style="color: var(--primary); width: 20px; text-align: center;"></i> Analyseur de Densité (SEO)
+                                </a>
+                                <a href="/extracteur-texte/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-filter" style="color: var(--primary); width: 20px; text-align: center;"></i> Extracteur de Texte Arabe
+                                </a>
+                                <a href="/encodeur-decodeur-url-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-link" style="color: var(--primary); width: 20px; text-align: center;"></i> Décodeur d'URL Arabe
+                                </a>
+                                <a href="/generateur-lorem-ipsum-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-paragraph" style="color: var(--primary); width: 20px; text-align: center;"></i> Générateur Lorem Ipsum
+                                </a>
+
+                                <!-- Outils Divers et Accessibilité -->
+                                <a href="/lecteur-texte-arabe-vocal/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-volume-high" style="color: var(--primary); width: 20px; text-align: center;"></i> Lecteur Vocal (TTS)
+                                </a>
+                                <a href="/convertisseur-arabe-braille/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-braille" style="color: var(--primary); width: 20px; text-align: center;"></i> Traducteur Arabe ➔ Braille
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                </main>
+
+                <!-- Pub Droite -->
+                <aside class="ad-sidebar right-ad"></aside>
+
+            </div>
+        </div>
+    </div>
+
+    <footer class="full-width-footer">
+        <div class="container">
+            <div class="grid-layout">
+                <div class="footer-spacer"></div>
+                <div class="footer-inner">
+                    <div class="footer-links">
+                        <a href="/privacy/">Politique de Confidentialité</a>
+                        <a href="/cookies/">Politique des Cookies</a>
+                        <a href="/terms/">Conditions d'Utilisation</a>
+                        <a href="/contact/">Contact</a>
+                    </div>
+                    <div>&copy; 2026 Clavier Arabe. Tous droits réservés.</div>
+                </div>
+                <div class="footer-spacer"></div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast">Action réussie !</div>
+
+    <!-- SCRIPT DE SYNTHÈSE VOCALE (TEXT-TO-SPEECH) -->
+    <script>
+        const textarea = document.getElementById('toolInput');
+        const voiceSelect = document.getElementById('voiceSelect');
+        const rateSlider = document.getElementById('rateSlider');
+        const pitchSlider = document.getElementById('pitchSlider');
+        const visualizer = document.getElementById('visualizer');
+        const btnPlay = document.getElementById('btnPlay');
+        const btnPause = document.getElementById('btnPause');
+        const btnStop = document.getElementById('btnStop');
+
+        let synth = window.speechSynthesis;
+        let voices = [];
+
+        // Vérification de la compatibilité TTS
+        if (!('speechSynthesis' in window)) {
+            document.getElementById('ttsError').style.display = 'block';
+            btnPlay.disabled = true;
+            btnPlay.style.opacity = '0.5';
+        }
+
+        // Récupérer et lister les voix arabes disponibles sur l'appareil
+        function populateVoiceList() {
+            voices = synth.getVoices();
+            // Filtrer les voix pour ne garder que les voix Arabes (ar-SA, ar-AE, ar-EG, ar-001, etc.)
+            let arabicVoices = voices.filter(voice => voice.lang.startsWith('ar'));
+            
+            voiceSelect.innerHTML = '';
+            
+            if (arabicVoices.length === 0) {
+                // Si aucune voix arabe stricte n'est trouvée (rare sur OS moderne, mais possible),
+                // on propose toutes les voix ou on affiche un message.
+                let option = document.createElement('option');
+                option.textContent = "Aucune voix arabe locale détectée. Le système utilisera la voix par défaut.";
+                option.value = 'default';
+                voiceSelect.appendChild(option);
+            } else {
+                arabicVoices.forEach((voice, i) => {
+                    let option = document.createElement('option');
+                    // Rendre le nom de la voix plus "lisible" pour l'utilisateur
+                    let voiceName = voice.name;
+                    if (voice.localService === false) voiceName += ' (Cloud/Premium)';
+                    option.textContent = `${voiceName} (${voice.lang})`;
+                    
+                    // On attribue l'index de la liste complète des voix pour le retrouver plus tard
+                    option.value = voices.indexOf(voice);
+                    voiceSelect.appendChild(option);
+                });
+            }
+        }
+
+        // Remplir la liste (Le chargement des voix est asynchrone sur certains navigateurs comme Chrome)
+        populateVoiceList();
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = populateVoiceList;
+        }
+
+        // Mise à jour visuelle des labels des sliders
+        function updateSliderValue(elementId, value) {
+            document.getElementById(elementId).innerText = value;
+        }
+
+        // Moteur de Lecture
+        function speakText() {
+            if (synth.speaking && synth.paused) {
+                // Si en pause, on reprend la lecture
+                synth.resume();
+                setUIState('playing');
+                return;
+            }
+
+            if (textarea.value.trim() === '') {
+                showToast("Veuillez coller un texte arabe à lire.");
+                return;
+            }
+
+            // Arrêter toute lecture en cours avant d'en lancer une nouvelle
+            synth.cancel();
+
+            let utterThis = new SpeechSynthesisUtterance(textarea.value);
+
+            // Attribution de la voix sélectionnée
+            const selectedVoiceIndex = voiceSelect.value;
+            if (selectedVoiceIndex !== 'default' && voices[selectedVoiceIndex]) {
+                utterThis.voice = voices[selectedVoiceIndex];
+            } else {
+                utterThis.lang = 'ar-SA'; // Fallback forcer la langue arabe
+            }
+
+            // Attribution de la vitesse et de la tonalité
+            utterThis.rate = parseFloat(rateSlider.value);
+            utterThis.pitch = parseFloat(pitchSlider.value);
+
+            // Événements de lecture
+            utterThis.onstart = function(event) {
+                setUIState('playing');
+            };
+
+            utterThis.onend = function(event) {
+                setUIState('stopped');
+            };
+
+            utterThis.onerror = function(event) {
+                console.error("SpeechSynthesisUtterance error:", event);
+                setUIState('stopped');
+                showToast("Erreur lors de la lecture.");
+            };
+
+            synth.speak(utterThis);
+        }
+
+        function pauseText() {
+            if (synth.speaking && !synth.paused) {
+                synth.pause();
+                setUIState('paused');
+            }
+        }
+
+        function stopText() {
+            synth.cancel();
+            setUIState('stopped');
+        }
+
+        function clearText() {
+            textarea.value = '';
+            stopText();
+            textarea.focus();
+        }
+
+        // Gestion de l'UI (Boutons et Visualiseur)
+        function setUIState(state) {
+            if (state === 'playing') {
+                visualizer.classList.add('playing');
+                btnPlay.innerHTML = '<i class="fa-solid fa-play"></i> En lecture...';
+                
+                btnPause.disabled = false;
+                btnPause.style.opacity = '1';
+                btnStop.disabled = false;
+                btnStop.style.opacity = '1';
+            } 
+            else if (state === 'paused') {
+                visualizer.classList.remove('playing');
+                btnPlay.innerHTML = '<i class="fa-solid fa-play"></i> Reprendre';
+                
+                btnPause.disabled = true;
+                btnPause.style.opacity = '0.5';
+                btnStop.disabled = false;
+                btnStop.style.opacity = '1';
+            } 
+            else if (state === 'stopped') {
+                visualizer.classList.remove('playing');
+                btnPlay.innerHTML = '<i class="fa-solid fa-play"></i> Lire le texte';
+                
+                btnPause.disabled = true;
+                btnPause.style.opacity = '0.5';
+                btnStop.disabled = true;
+                btnStop.style.opacity = '0.5';
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 2500);
+        }
+
+        // S'assurer que le son coupe si on ferme ou change de page
+        window.onbeforeunload = function() {
+            synth.cancel();
+        };
+    </script>
+</body>
+</html>

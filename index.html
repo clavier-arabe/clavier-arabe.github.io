@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- SEO Meta Tags -->
+    <title>Clavier Arabe | لوحة مفاتيح للكتابة بالعربية</title>
+    <meta name="description" content="Utilisez notre Clavier Arabe virtuel gratuit pour taper en arabe facilement. Comprend un moteur de translittération intelligent, les Harakat, et un design responsive.">
+    <meta name="keywords" content="clavier arabe, clavier arabe virtuel, ecrire en arabe, clavier arabe en ligne, yamli alternative, harakat, lettres arabes, arabic keyboard">
+    <meta name="author" content="Clavier Arabe">
+    <link rel="canonical" href="https://clavier-arabe.github.io/">
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://clavier-arabe.github.io/">
+    <meta property="og:title" content="Clavier Arabe Virtuel en Ligne">
+    <meta property="og:description" content="Utilisez notre Clavier Arabe virtuel gratuit pour taper en arabe facilement avec notre moteur de translittération intelligent.">
+    <!-- Google Fonts & Icons & CSS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .tool-header h1 { font-size: 1.8rem; color: #111827; margin-bottom: 8px; }
+        .tool-header p { color: var(--text-muted); font-size: 1rem; margin-bottom: 25px; }
+        
+        .mapping-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 10px; margin-bottom: 20px; }
+        .map-item { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; padding: 8px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .map-ar { font-size: 22px; font-family: 'Amiri', serif; color: var(--text-main); margin-bottom: 5px; }
+        .map-en { font-size: 13px; font-weight: 700; color: var(--primary); background: #eff6ff; padding: 2px 8px; border-radius: 12px; }
+        .content-section a:hover {
+            border-color: var(--primary) !important;
+            background: #eff6ff !important;
+            color: var(--primary) !important;
+            text-decoration: none !important;
+        }
+        @media (max-width: 768px) {
+            .mapping-grid { grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); }
+            .map-ar { font-size: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- En-tête (Header) -->
+    <header class="full-width-header">
+        <div class="container">
+            <div class="grid-layout">
+                <div class="header-spacer"></div>
+                <div class="header-inner">
+                    <a href="/" class="logo"><span>Clavier Arabe</span> <span class="tiny"><i class="fa-solid fa-keyboard"></i></span></a>
+                    <div class="toggle-container" id="transToggle" onclick="toggleTransliteration()" title="Activer/Désactiver la translittération">
+                        <span class="toggle-label" id="trans-text">Translittération (OFF)</span>
+                        <div class="toggle-track">
+                            <div class="toggle-thumb"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="header-spacer"></div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-content-area">
+        <div class="container">
+            <div class="grid-layout">
+                
+                <!-- Publicité Gauche -->
+                <aside class="ad-sidebar left-ad"></aside>
+
+                <!-- Zone Principale -->
+                <main class="main-panel">
+                    
+                    <!-- Clavier & Éditeur -->
+                    <div class="boxed-section editor-card">
+                        <div class="tool-header">
+                            <h1>Clavier Arabe - لوحة مفاتيح للكتابة بالعربية</h1>
+                            <p>Tapez facilement avec un clavier arabe virtuel intuitif, utilisez la translittération si nécessaire, et copiez votre texte prêt à être utilisé dans vos messages, documents ou recherches.</p>
+                        </div>
+
+                        <textarea id="area" class="text-area-input" placeholder="مَرْحَبًا بِكُمْ..."></textarea>
+                        
+                        <div class="toolbar">
+                            <div class="toolbar-group">
+                                <button class="btn" onclick="changeFontSize(4)" title="Agrandir le texte">A+</button>
+                                <button class="btn" onclick="changeFontSize(-4)" title="Réduire le texte">A-</button>
+                                <button class="btn" onclick="searchGoogle()"><i class="fa-brands fa-google"></i> Google</button>
+                                <button class="btn" onclick="searchYoutube()"><i class="fa-brands fa-youtube"></i> YouTube</button>
+                            </div>
+                            <div class="toolbar-group">
+                                <button class="btn btn-danger" onclick="clearText()"><i class="fa-solid fa-trash-can"></i></button>
+                                <button class="btn btn-primary" onclick="copyText()"><i class="fa-regular fa-copy"></i> Copier</button>
+                            </div>
+                        </div>
+
+                        <!-- Clavier Virtuel -->
+                        <div class="keyboard-container" id="virtual-keyboard">
+                            <div class="keyboard-row">
+                                <button class="key" onclick="insertChar('ض')">ض</button>
+                                <button class="key" onclick="insertChar('ص')">ص</button>
+                                <button class="key" onclick="insertChar('ش')">ش</button>
+                                <button class="key" onclick="insertChar('س')">س</button>
+                                <button class="key" onclick="insertChar('ز')">ز</button>
+                                <button class="key" onclick="insertChar('ر')">ر</button>
+                                <button class="key" onclick="insertChar('ذ')">ذ</button>
+                                <button class="key" onclick="insertChar('د')">د</button>
+                                <button class="key" onclick="insertChar('خ')">خ</button>
+                                <button class="key" onclick="insertChar('ح')">ح</button>
+                                <button class="key" onclick="insertChar('ج')">ج</button>
+                                <button class="key" onclick="insertChar('ث')">ث</button>
+                                <button class="key" onclick="insertChar('ت')">ت</button>
+                                <button class="key" onclick="insertChar('ب')">ب</button>
+                                <button class="key" onclick="insertChar('ا')">ا</button>
+                            </div>
+                            <div class="keyboard-row">
+                                <button class="key" onclick="insertChar('ء')">ء</button>
+                                <button class="key" onclick="insertChar('ي')">ي</button>
+                                <button class="key" onclick="insertChar('و')">و</button>
+                                <button class="key" onclick="insertChar('ه')">ه</button>
+                                <button class="key" onclick="insertChar('ن')">ن</button>
+                                <button class="key" onclick="insertChar('م')">م</button>
+                                <button class="key" onclick="insertChar('ل')">ل</button>
+                                <button class="key" onclick="insertChar('ك')">ك</button>
+                                <button class="key" onclick="insertChar('ق')">ق</button>
+                                <button class="key" onclick="insertChar('ف')">ف</button>
+                                <button class="key" onclick="insertChar('غ')">غ</button>
+                                <button class="key" onclick="insertChar('ع')">ع</button>
+                                <button class="key" onclick="insertChar('ظ')">ظ</button>
+                                <button class="key" onclick="insertChar('ط')">ط</button>
+                            </div>
+                            <div class="keyboard-row">
+                                <button class="key" onclick="insertChar('؟')">؟</button>
+                                <button class="key" onclick="insertChar('؛')">؛</button>
+                                <button class="key" onclick="insertChar('،')">،</button>
+                                <button class="key" onclick="insertChar('.')">.</button>
+                                <button class="key" onclick="insertChar('ـ')">ـ</button>
+                                <button class="key" onclick="insertChar('ى')">ى</button>
+                                <button class="key" onclick="insertChar('ئ')">ئ</button>
+                                <button class="key" onclick="insertChar('ؤ')">ؤ</button>
+                                <button class="key" onclick="insertChar('ة')">ة</button>
+                                <button class="key" onclick="insertChar('آ')">آ</button>
+                                <button class="key" onclick="insertChar('إ')">إ</button>
+                                <button class="key" onclick="insertChar('أ')">أ</button>
+                                <button class="key key-action" onclick="backspace()">Retour</button>
+                            </div>
+                            <div class="keyboard-row">
+                                <button class="key" onclick="insertChar('+')">+</button>
+                                <button class="key" onclick="insertChar('-')">-</button>
+                                <button class="key" onclick="insertChar('٠')">٠</button>
+                                <button class="key" onclick="insertChar('٩')">٩</button>
+                                <button class="key" onclick="insertChar('٨')">٨</button>
+                                <button class="key" onclick="insertChar('٧')">٧</button>
+                                <button class="key" onclick="insertChar('٦')">٦</button>
+                                <button class="key" onclick="insertChar('٥')">٥</button>
+                                <button class="key" onclick="insertChar('٤')">٤</button>
+                                <button class="key" onclick="insertChar('٣')">٣</button>
+                                <button class="key" onclick="insertChar('٢')">٢</button>
+                                <button class="key" onclick="insertChar('١')">١</button>
+                            </div>
+                            <div class="keyboard-row space-row">
+                                <button class="key key-space" onclick="insertChar(' ')">Espace / مسافة</button>
+                            </div>
+                            <div class="keyboard-row">
+                                <button class="key key-diacritic" onclick="insertChar('َ')" title="Fatha">َ</button>
+                                <button class="key key-diacritic" onclick="insertChar('ِ')" title="Kasra">ِ</button>
+                                <button class="key key-diacritic" onclick="insertChar('ُ')" title="Damma">ُ</button>
+                                <button class="key key-diacritic" onclick="insertChar('ً')" title="Fathatan">ً</button>
+                                <button class="key key-diacritic" onclick="insertChar('ٍ')" title="Kasratan">ٍ</button>
+                                <button class="key key-diacritic" onclick="insertChar('ٌ')" title="Dammatan">ٌ</button>
+                                <button class="key key-diacritic" onclick="insertChar('ْ')" title="Sukun">ْ</button>
+                                <button class="key key-diacritic" onclick="insertChar('ّ')" title="Shadda">ّ</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contenu SEO -->
+                    <article class="boxed-section content-section">
+                        <h2>Le Meilleur Clavier Arabe en Ligne & Alternative à Yamli</h2>
+                        <p>Bienvenue sur le <strong>Clavier Arabe virtuel</strong> le plus avancé, gratuit et entièrement responsive. Cet outil de frappe en ligne vous permet d'écrire des mots, des phrases et des documents entiers en arabe de manière fluide, depuis n'importe quel appareil, sans avoir besoin d'installer de packs de langue ou d'acheter un clavier physique arabe.</p>
+                        <p>Que vous soyez un locuteur natif étudiant à l'étranger, un élève apprenant l'alphabet arabe, ou un professionnel à la recherche d'une <strong>alternative fiable à Yamli</strong>, notre plateforme vous offre une expérience de frappe parfaite directement dans votre navigateur.</p>
+
+                        <h3>Comment fonctionne la Translittération</h3>
+                        <p>Notre clavier intègre un <strong>moteur de translittération</strong> hautement intelligent. En activant l'interrupteur situé en haut, vous pouvez taper en utilisant les touches latines standards (AZERTY/QWERTY), et le système les convertit instantanément en leurs équivalents phonétiques arabes (idéal pour "l'Arabizi").</p>
+                        <ul>
+                            <li>Tapez <strong>"3"</strong> pour obtenir <strong>"ع"</strong> (Ayn)</li>
+                            <li>Tapez <strong>"7"</strong> pour obtenir <strong>"ح"</strong> (Haa)</li>
+                            <li>Tapez <strong>"sh"</strong> ou <strong>"ch"</strong> pour obtenir <strong>"ش"</strong> (Chine)</li>
+                        </ul>
+
+                        <h3>Règles intelligentes des Harakat (Diacritiques)</h3>
+                        <p>Une prononciation et une précision grammaticale parfaites en arabe nécessitent l'utilisation de diacritiques (Harakat). Notre clavier applique des règles linguistiques strictes pour garantir un formatage Unicode parfait:</p>
+                        <ul>
+                            <li><strong>Règle de la voyelle unique:</strong> Une lettre arabe ne peut porter qu'une seule voyelle principale à la fois (ex: Fatha َ, Kasra ِ, Damma ُ, Sukun ْ). Si vous en tapez deux par erreur, le système corrige automatiquement pour ne conserver que la dernière.</li>
+                            <li><strong>La règle de la Chadda (ّ):</strong> La Chadda indique une consonne double. Elle ne peut se combiner qu'avec une Fatha, Kasra ou Damma. Notre moteur permet d'empiler ces combinaisons (ex: ّ + َ = َّ) tout en supprimant les caractères invalides pour garder un texte propre.</li>
+                        </ul>
+
+                        <h3>Guide de mapping de la Translittération</h3>
+                        <p>Consultez la grille ci-dessous pour voir exactement quelles touches latines correspondent à quelles lettres arabes lorsque la translittération est activée.</p>
+                        
+                        <div class="mapping-grid">
+                            <div class="map-item"><span class="map-ar">ا</span><span class="map-en">a</span></div>
+                            <div class="map-item"><span class="map-ar">ب</span><span class="map-en">b/p</span></div>
+                            <div class="map-item"><span class="map-ar">ت</span><span class="map-en">t</span></div>
+                            <div class="map-item"><span class="map-ar">ث</span><span class="map-en">c/th</span></div>
+                            <div class="map-item"><span class="map-ar">ج</span><span class="map-en">j</span></div>
+                            <div class="map-item"><span class="map-ar">ح</span><span class="map-en">7</span></div>
+                            <div class="map-item"><span class="map-ar">خ</span><span class="map-en">5/x</span></div>
+                            <div class="map-item"><span class="map-ar">د</span><span class="map-en">d</span></div>
+                            <div class="map-item"><span class="map-ar">ذ</span><span class="map-en">'d</span></div>
+                            <div class="map-item"><span class="map-ar">ر</span><span class="map-en">r</span></div>
+                            <div class="map-item"><span class="map-ar">ز</span><span class="map-en">z</span></div>
+                            <div class="map-item"><span class="map-ar">س</span><span class="map-en">s</span></div>
+                            <div class="map-item"><span class="map-ar">ش</span><span class="map-en">ch/sh</span></div>
+                            <div class="map-item"><span class="map-ar">ص</span><span class="map-en">S/9</span></div>
+                            <div class="map-item"><span class="map-ar">ض</span><span class="map-en">D/9'</span></div>
+                            <div class="map-item"><span class="map-ar">ط</span><span class="map-en">T/6</span></div>
+                            <div class="map-item"><span class="map-ar">ظ</span><span class="map-en">Z</span></div>
+                            <div class="map-item"><span class="map-ar">ع</span><span class="map-en">3</span></div>
+                            <div class="map-item"><span class="map-ar">غ</span><span class="map-en">'3</span></div>
+                            <div class="map-item"><span class="map-ar">ف</span><span class="map-en">f/v</span></div>
+                            <div class="map-item"><span class="map-ar">ق</span><span class="map-en">q/K</span></div>
+                            <div class="map-item"><span class="map-ar">ك</span><span class="map-en">k</span></div>
+                            <div class="map-item"><span class="map-ar">ل</span><span class="map-en">l</span></div>
+                            <div class="map-item"><span class="map-ar">م</span><span class="map-en">m</span></div>
+                            <div class="map-item"><span class="map-ar">ن</span><span class="map-en">n</span></div>
+                            <div class="map-item"><span class="map-ar">ه</span><span class="map-en">h</span></div>
+                            <div class="map-item"><span class="map-ar">و</span><span class="map-en">w/o</span></div>
+                            <div class="map-item"><span class="map-ar">ي</span><span class="map-en">y/i</span></div>
+                        </div>
+
+                        <h3 style="margin-top: 10px;">Caractères Spéciaux & Harakat</h3>
+                        <div class="mapping-grid">
+                            <div class="map-item"><span class="map-ar">ة</span><span class="map-en">H</span></div>
+                            <div class="map-item"><span class="map-ar">أ</span><span class="map-en">1/'a</span></div>
+                            <div class="map-item"><span class="map-ar">إ</span><span class="map-en">I/A</span></div>
+                            <div class="map-item"><span class="map-ar">آ</span><span class="map-en">e</span></div>
+                            <div class="map-item"><span class="map-ar">ء</span><span class="map-en">2/-</span></div>
+                            <div class="map-item"><span class="map-ar">َ</span><span class="map-en">=a</span></div>
+                            <div class="map-item"><span class="map-ar">ِ</span><span class="map-en">=i</span></div>
+                            <div class="map-item"><span class="map-ar">ُ</span><span class="map-en">=o</span></div>
+                            <div class="map-item"><span class="map-ar">ً</span><span class="map-en">=an</span></div>
+                            <div class="map-item"><span class="map-ar">ٍ</span><span class="map-en">=in</span></div>
+                            <div class="map-item"><span class="map-ar">ٌ</span><span class="map-en">=on</span></div>
+                        </div>
+
+                        <h3>Pourquoi choisir notre Clavier Virtuel Arabe?</h3>
+                        <p>Taper dans une langue s'écrivant de droite à gauche (RTL) sur un ordinateur configuré pour le français ou l'anglais peut être frustrant. Modifier les paramètres de votre système d'exploitation pour accommoder un clavier arabe physique entraîne souvent des correspondances de touches confuses. Notre outil résout cela instantanément.</p>
+                        <ul>
+                            <li><strong>Aucune installation requise:</strong> Tout fonctionne dans votre navigateur web. Aucun téléchargement, aucune extension, et absolument aucun risque de malware.</li>
+                            <li><strong>Compatibilité Multiplateforme:</strong> Que vous soyez sur Mac, PC Windows, iPad ou smartphone Android, le design responsive s'adapte parfaitement à votre écran.</li>
+                            <li><strong>Confidentialité Absolue:</strong> Nous respectons vos données. Notre clavier utilise uniquement du JavaScript côté client. Chaque frappe est traitée directement sur votre appareil. Nous ne stockons, ni ne traçons aucun texte sur nos serveurs.</li>
+                            <li><strong>Actions en un Clic:</strong> Une fois votre texte terminé, copiez-le dans le presse-papiers d'un simple clic, ou lancez directement une recherche sur Google ou YouTube.</li>
+                        </ul>
+                        <div style="margin-top: 40px; padding-top: 25px; border-top: 2px dashed #e5e7eb;">
+                            <h3 style="font-size: 1.4rem; color: #111827; margin-bottom: 15px; margin-top: 0;">Découvrez nos outils gratuits pour l'Arabe</h3>
+                            <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 20px;">Simplifiez votre rédaction, votre apprentissage ou votre développement informatique grâce à notre suite d'outils spécialisés:</p>
+                            
+                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px;">
+                                
+                                <!-- Outils Principaux -->
+                                <a href="/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-keyboard" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Arabe Virtuel
+                                </a>
+                                <a href="/clavier-persan-farsi/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-language" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Persan & Ourdou
+                                </a>
+                                <a href="/clavier-maghrebin-darija/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-earth-africa" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Maghrébin (Darija)
+                                </a>
+                                
+                                <!-- Outils de Manipulation de Texte -->
+                                <a href="/suppresseur-harakat/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-eraser" style="color: var(--primary); width: 20px; text-align: center;"></i> Suppresseur de Harakat
+                                </a>
+                                <a href="/nettoyeur-texte/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-broom" style="color: var(--primary); width: 20px; text-align: center;"></i> Nettoyeur de Texte
+                                </a>
+                                <a href="/allongement-tatweel/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-text-width" style="color: var(--primary); width: 20px; text-align: center;"></i> Étirer Texte (Tatweel)
+                                </a>
+                                <a href="/convertisseur-ponctuation-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-question" style="color: var(--primary); width: 20px; text-align: center;"></i> Inverser la Ponctuation
+                                </a>
+                                <a href="/chercher-remplacer-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-magnifying-glass-arrow-right" style="color: var(--primary); width: 20px; text-align: center;"></i> Chercher/Remplacer (Tolérant)
+                                </a>
+                                <a href="/reparateur-texte-photoshop/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--primary); width: 20px; text-align: center;"></i> Réparateur Photoshop/Adobe
+                                </a>
+                                
+                                <!-- Outils de Données, Nombres et Programmation -->
+                                <a href="/convertisseur-chiffres-arabes/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-1" style="color: var(--primary); width: 20px; text-align: center;"></i> Chiffres (Orientaux ↔ Européens)
+                                </a>
+                                <a href="/nombres-en-lettres-tafqit/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-money-check-dollar" style="color: var(--primary); width: 20px; text-align: center;"></i> Chiffres en Lettres (Tafqit)
+                                </a>
+                                <a href="/compteur-mots-caracteres/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-calculator" style="color: var(--primary); width: 20px; text-align: center;"></i> Compteur de Mots
+                                </a>
+                                <a href="/trieur-alphabetique/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-arrow-down-a-z" style="color: var(--primary); width: 20px; text-align: center;"></i> Trieur Alphabétique Arabe
+                                </a>
+                                <a href="/analyseur-frequence-mots-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-chart-simple" style="color: var(--primary); width: 20px; text-align: center;"></i> Analyseur de Densité (SEO)
+                                </a>
+                                <a href="/extracteur-texte/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-filter" style="color: var(--primary); width: 20px; text-align: center;"></i> Extracteur de Texte Arabe
+                                </a>
+                                <a href="/encodeur-decodeur-url-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-link" style="color: var(--primary); width: 20px; text-align: center;"></i> Décodeur d'URL Arabe
+                                </a>
+                                <a href="/generateur-lorem-ipsum-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-paragraph" style="color: var(--primary); width: 20px; text-align: center;"></i> Générateur Lorem Ipsum
+                                </a>
+
+                                <!-- Outils Divers et Accessibilité -->
+                                <a href="/lecteur-texte-arabe-vocal/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-volume-high" style="color: var(--primary); width: 20px; text-align: center;"></i> Lecteur Vocal (TTS)
+                                </a>
+                                <a href="/convertisseur-arabe-braille/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-braille" style="color: var(--primary); width: 20px; text-align: center;"></i> Traducteur Arabe ➔ Braille
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                </main>
+
+                <!-- Publicité Droite -->
+                <aside class="ad-sidebar right-ad"></aside>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Pied de page (Footer) -->
+    <footer class="full-width-footer">
+        <div class="container">
+            <div class="grid-layout">
+                <div class="footer-spacer"></div>
+                <div class="footer-inner">
+                    <div class="footer-links">
+                        <a href="/privacy/">Politique de Confidentialité</a>
+                        <a href="/cookies/">Politique des Cookies</a>
+                        <a href="/terms/">Conditions d'Utilisation</a>
+                        <a href="/contact/">Contact</a>
+                    </div>
+                    <div>&copy; 2026 Clavier Arabe. Tous droits réservés.</div>
+                </div>
+                <div class="footer-spacer"></div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Notification -->
+    <div id="toast" class="toast">Copié dans le presse-papiers !</div>
+
+    <script>
+        const textarea = document.getElementById('area');
+        let isTransliterationActive = false;
+
+        window.onload = () => textarea.focus();
+
+        function toggleTransliteration() {
+            isTransliterationActive = !isTransliterationActive;
+            const toggleContainer = document.getElementById('transToggle');
+            const text = document.getElementById('trans-text');
+            
+            if(isTransliterationActive) {
+                toggleContainer.classList.add('active');
+                text.innerText = "Translittération (ON)";
+            } else {
+                toggleContainer.classList.remove('active');
+                text.innerText = "Translittération (OFF)";
+            }
+            textarea.focus();
+        }
+
+        function insertChar(char) {
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            let text = textarea.value;
+            
+            text = text.substring(0, start) + char + text.substring(end);
+            textarea.value = text;
+            textarea.selectionStart = textarea.selectionEnd = start + char.length;
+
+            if(isTransliterationActive) {
+                processTransliteration();
+            }
+            enforceDiacriticRules();
+            textarea.focus();
+        }
+
+        function backspace() {
+            const start = textarea.selectionStart;
+            if (start === 0) return;
+            const text = textarea.value;
+            textarea.value = text.substring(0, start - 1) + text.substring(textarea.selectionEnd);
+            textarea.selectionStart = textarea.selectionEnd = start - 1;
+            textarea.focus();
+        }
+
+        function changeFontSize(step) {
+            let currentSize = window.getComputedStyle(textarea, null).getPropertyValue('font-size');
+            let newSize = parseFloat(currentSize) + step;
+            textarea.style.fontSize = newSize + 'px';
+            textarea.focus();
+        }
+
+        function clearText() {
+            textarea.value = '';
+            textarea.focus();
+        }
+
+        function searchGoogle() {
+            if(!textarea.value.trim()) return;
+            window.open("https://www.google.fr/search?q=" + encodeURIComponent(textarea.value), "_blank");
+        }
+
+        function searchYoutube() {
+            if(!textarea.value.trim()) return;
+            window.open("https://www.youtube.com/results?search_query=" + encodeURIComponent(textarea.value), "_blank");
+        }
+
+        function copyText() {
+            textarea.select();
+            navigator.clipboard.writeText(textarea.value).then(() => {
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+                setTimeout(() => { toast.classList.remove('show'); }, 2500);
+                textarea.selectionStart = textarea.selectionEnd = textarea.value.length;
+            });
+        }
+
+        textarea.addEventListener('keyup', (e) => {
+            if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return;
+            if(isTransliterationActive) {
+                processTransliteration();
+            }
+            enforceDiacriticRules();
+        });
+
+        function processTransliteration() {
+            const cursorPosition = textarea.selectionStart;
+            let br = textarea.value;
+
+            br = br.replace(/3/g,"ع"); br = br.replace(/a/g,"ا"); br = br.replace(/b/g,"ب"); br = br.replace(/p/g,"ب");  
+            br = br.replace(/t/g,"ت"); br = br.replace(/7/g,"ح"); br = br.replace(/c/g,"ث"); br = br.replace(/سس/g,"ث"); br = br.replace(/ت'/g,"ث");  
+            br = br.replace(/j/g,"ج"); br = br.replace(/ح'/g,"خ"); br = br.replace(/x/g,"خ"); br = br.replace(/5/g,"خ");
+            br = br.replace(/k/g,"ك"); br = br.replace(/d/g,"د"); br = br.replace(/د'/g,"ذ"); br = br.replace(/r/g,"ر");  
+            br = br.replace(/z/g,"ز"); br = br.replace(/ر'/g,"ز"); br = br.replace(/R/g,"ز"); br = br.replace(/s/g,"س"); 
+            br = br.replace(/ثه/g,"ش"); br = br.replace(/س'/g,"ش"); br = br.replace(/ch/g,"ش"); br = br.replace(/sh/g,"ش");
+            br = br.replace(/S/g,"ص"); br = br.replace(/9/g,"ص"); br = br.replace(/ص'/g,"ض"); br = br.replace(/D/g,"ض"); br = br.replace(/9'/g,"ض");
+            br = br.replace(/T/g,"ط"); br = br.replace(/6/g,"ط"); br = br.replace(/ط'/g,"ظ"); br = br.replace(/Z/g,"ظ");
+            br = br.replace(/ع'/g,"غ"); br = br.replace(/gه/g,"غ"); br = br.replace(/f/g,"ف"); br = br.replace(/v/g,"ف");
+            br = br.replace(/ك'/g,"ق"); br = br.replace(/K/g,"ق"); br = br.replace(/q/g,"ق"); br = br.replace(/l/g,"ل");
+            br = br.replace(/m/g,"م"); br = br.replace(/n/g,"ن"); br = br.replace(/h/g,"ه");
+            br = br.replace(/w/g,"و"); br = br.replace(/o/g,"و"); br = br.replace(/u/g,"و"); br = br.replace(/y/g,"ي"); br = br.replace(/i/g,"ي");
+            br = br.replace(/e/g,"آ"); br = br.replace(/و'/g,"ؤ"); br = br.replace(/وء/g,"ؤ"); br = br.replace(/ءي/g,"ئ"); br = br.replace(/ء#/g,"ئ"); br = br.replace(/ي'/g,"ئ");
+            br = br.replace(/#/g,"ى"); br = br.replace(/آآ/g,"ى"); br = br.replace(/اءء/g,"إ"); br = br.replace(/I/g,"إ"); br = br.replace(/A/g,"إ");
+            br = br.replace(/ءا/g,"أ"); br = br.replace(/ا'/g,"أ"); br = br.replace(/_/g,"ـ"); br = br.replace(/2/g,"ء"); br = br.replace(/-/g,"ء"); 
+            br = br.replace(/ه'/g,"ة"); br = br.replace(/H/g,"ة");
+            
+            br = br.replace(/ا=/g,"َ"); br = br.replace(/و=/g,"ُ"); br = br.replace(/ي=/g,"ِ"); br = br.replace(/ون=/g,"ٌ");
+            br = br.replace(/ين=/g,"ٍ"); br = br.replace(/ان=/g,"ً"); br = br.replace(/1/g,"أ");
+
+            textarea.value = br;
+            textarea.selectionStart = textarea.selectionEnd = cursorPosition;
+        }
+
+        function enforceDiacriticRules() {
+            const cursorPosition = textarea.selectionStart;
+            const text = textarea.value;
+            const primaries = ['َ', 'ِ', 'ُ', 'ً', 'ٍ', 'ٌ', 'ْ'];
+            const shadda = 'ّ';
+            const shaddaAllowed = ['َ', 'ِ', 'ُ'];
+            let result = '';
+            let offsetModifier = 0;
+
+            for (let i = 0; i < text.length; i++) {
+                let char = text[i];
+                if (primaries.includes(char) || char === shadda) {
+                    let prev = result.slice(-1);
+                    if (char === shadda) {
+                        if (prev === shadda) { if (i < cursorPosition) offsetModifier--; continue; }
+                        if (primaries.includes(prev)) {
+                            if (shaddaAllowed.includes(prev)) { result = result.slice(0, -1) + shadda + prev; } 
+                            else { result = result.slice(0, -1) + shadda; if (i < cursorPosition) offsetModifier--; }
+                        } else { result += char; }
+                    } else if (primaries.includes(char)) {
+                        if (primaries.includes(prev)) { result = result.slice(0, -1) + char; if (i < cursorPosition) offsetModifier--; } 
+                        else if (prev === shadda && !shaddaAllowed.includes(char)) { result = result.slice(0, -1) + char; if (i < cursorPosition) offsetModifier--; } 
+                        else { result += char; }
+                    }
+                } else { result += char; }
+            }
+
+            if (text !== result) {
+                textarea.value = result;
+                let newCursor = Math.max(0, cursorPosition + offsetModifier);
+                textarea.selectionStart = textarea.selectionEnd = newCursor;
+            }
+        }
+    </script>
+</body>
+</html>

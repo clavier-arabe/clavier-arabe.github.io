@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clavier Persan (Farsi) & Ourdou | کیبورد فارسی</title>
+    <meta name="description" content="Clavier Persan virtuel gratuit pour taper en Farsi et Ourdou en ligne. Comprend les lettres additionnelles (پ, چ, ژ, گ) et un moteur de translittération.">
+    <meta name="keywords" content="clavier persan, clavier farsi, clavier ourdou, persian keyboard, farsi keyboard online, clavier iranien, lettres persanes, type in farsi">
+    <meta name="author" content="Clavier Arabe">
+    <link rel="canonical" href="https://clavier-arabe.github.io/clavier-persan-farsi/">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://clavier-arabe.github.io/clavier-persan-farsi/">
+    <meta property="og:title" content="Clavier Persan (Farsi) & Ourdou en Ligne">
+    <meta property="og:description" content="Tapez en Farsi et Ourdou facilement grâce à notre clavier virtuel et son système de translittération intelligent.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .tool-header h1 { font-size: 1.8rem; color: #111827; margin-bottom: 8px; }
+        .tool-header p { color: var(--text-muted); font-size: 1rem; margin-bottom: 25px; }
+
+        /* Touches spécifiques au Persan/Ourdou (Highlight léger pour les différencier) */
+        .key-farsi {
+            background: #fffbeb;
+            border-color: #fde68a;
+            border-bottom-color: #fcd34d;
+            color: #b45309;
+            font-weight: 700;
+        }
+
+        .content-section a:hover {
+            border-color: var(--primary) !important;
+            background: #eff6ff !important;
+            color: var(--primary) !important;
+            text-decoration: none !important;
+        }
+        .mapping-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 10px; margin-bottom: 20px; }
+        .map-item { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; padding: 8px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .map-ar { font-size: 22px; font-family: 'Amiri', serif; color: var(--text-main); margin-bottom: 5px; }
+        .map-en { font-size: 13px; font-weight: 700; color: var(--primary); background: #eff6ff; padding: 2px 8px; border-radius: 12px; }
+    </style>
+</head>
+<body>
+
+    <header class="full-width-header">
+        <div class="container">
+            <div class="grid-layout">
+                <div class="header-spacer"></div>
+                <div class="header-inner">
+                    <a href="/" class="logo"><span>Clavier Arabe</span> <span class="tiny"><i class="fa-solid fa-keyboard"></i></span></a>
+                    <div class="toggle-container" id="transToggle" onclick="toggleTransliteration()" title="Activer/Désactiver la translittération">
+                        <span class="toggle-label" id="trans-text">Translittération (OFF)</span>
+                        <div class="toggle-track">
+                            <div class="toggle-thumb"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="header-spacer"></div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-content-area">
+        <div class="container">
+            <div class="grid-layout">
+                
+                <!-- Pub Gauche -->
+                <aside class="ad-sidebar left-ad"></aside>
+
+                <main class="main-panel">
+                    
+                    <!-- L'Outil Clavier Persan -->
+                    <div class="boxed-section editor-card">
+                        <div class="tool-header">
+                            <h1>Clavier Persan (Farsi) & Ourdou</h1>
+                            <p>Tapez votre texte en persan (farsi) ou en ourdou avec un clavier virtuel intuitif. Utilisez les caractères adaptés, activez la translittération si besoin, et écrivez facilement pour vos messages, documents ou recherches.</p>
+                        </div>
+
+                        <textarea id="area" class="text-area-input" placeholder="خوش آمدید..."></textarea>
+                        
+                        <div class="toolbar">
+                            <div class="toolbar-group">
+                                <button class="btn" onclick="changeFontSize(4)" title="Agrandir le texte">A+</button>
+                                <button class="btn" onclick="changeFontSize(-4)" title="Réduire le texte">A-</button>
+                                <button class="btn btn-primary" onclick="copyText()"><i class="fa-regular fa-copy"></i> Copier</button>
+                                <button class="btn btn-danger" onclick="clearText()"><i class="fa-solid fa-trash-can"></i> Vider</button>
+                            </div>
+                            <div class="toolbar-group">
+                                <button class="btn" onclick="searchGoogle()"><i class="fa-brands fa-google"></i> Google</button>
+                                <button class="btn" onclick="searchYoutube()"><i class="fa-brands fa-youtube"></i> YouTube</button>
+                            </div>
+                        </div>
+
+                        <!-- Clavier Virtuel Persan / Ourdou -->
+                        <div class="keyboard-container" id="virtual-keyboard">
+                            <!-- Ligne 1: +گ -->
+                            <div class="keyboard-row">
+                                <button class="key key-farsi" onclick="insertChar('گ')">گ</button>
+                                <button class="key" onclick="insertChar('ض')">ض</button>
+                                <button class="key" onclick="insertChar('ص')">ص</button>
+                                <button class="key" onclick="insertChar('ش')">ش</button>
+                                <button class="key" onclick="insertChar('س')">س</button>
+                                <button class="key" onclick="insertChar('ز')">ز</button>
+                                <button class="key" onclick="insertChar('ر')">ر</button>
+                                <button class="key" onclick="insertChar('ذ')">ذ</button>
+                                <button class="key" onclick="insertChar('د')">د</button>
+                                <button class="key" onclick="insertChar('خ')">خ</button>
+                                <button class="key" onclick="insertChar('ح')">ح</button>
+                                <button class="key" onclick="insertChar('ج')">ج</button>
+                                <button class="key" onclick="insertChar('ث')">ث</button>
+                                <button class="key" onclick="insertChar('ت')">ت</button>
+                                <button class="key" onclick="insertChar('ب')">ب</button>
+                                <button class="key" onclick="insertChar('ا')">ا</button>
+                            </div>
+                            <!-- Ligne 2: +پ, +چ -->
+                            <div class="keyboard-row">
+                                <button class="key key-farsi" onclick="insertChar('پ')">پ</button>
+                                <button class="key key-farsi" onclick="insertChar('چ')">چ</button>
+                                <button class="key" onclick="insertChar('ء')">ء</button>
+                                <button class="key" onclick="insertChar('ی')">ی</button>
+                                <button class="key" onclick="insertChar('و')">و</button>
+                                <button class="key" onclick="insertChar('ه')">ه</button>
+                                <button class="key" onclick="insertChar('ن')">ن</button>
+                                <button class="key" onclick="insertChar('م')">م</button>
+                                <button class="key" onclick="insertChar('ل')">ل</button>
+                                <button class="key" onclick="insertChar('ك')">ك</button>
+                                <button class="key" onclick="insertChar('ق')">ق</button>
+                                <button class="key" onclick="insertChar('ف')">ف</button>
+                                <button class="key" onclick="insertChar('غ')">غ</button>
+                                <button class="key" onclick="insertChar('ع')">ع</button>
+                                <button class="key" onclick="insertChar('ظ')">ظ</button>
+                                <button class="key" onclick="insertChar('ط')">ط</button>
+                            </div>
+                            <!-- Ligne 3: +ژ, +ک (Kaf persan) -->
+                            <div class="keyboard-row">
+                                <button class="key key-farsi" onclick="insertChar('ژ')">ژ</button>
+                                <button class="key key-farsi" onclick="insertChar('ک')">ک</button>
+                                <button class="key" onclick="insertChar('؟')">؟</button>
+                                <button class="key" onclick="insertChar('؛')">؛</button>
+                                <button class="key" onclick="insertChar('،')">،</button>
+                                <button class="key" onclick="insertChar('.')">.</button>
+                                <button class="key" onclick="insertChar('ـ')">ـ</button>
+                                <button class="key" onclick="insertChar('ى')">ى</button>
+                                <button class="key" onclick="insertChar('ئ')">ئ</button>
+                                <button class="key" onclick="insertChar('ؤ')">ؤ</button>
+                                <button class="key" onclick="insertChar('ة')">ة</button>
+                                <button class="key" onclick="insertChar('آ')">آ</button>
+                                <button class="key" onclick="insertChar('إ')">إ</button>
+                                <button class="key" onclick="insertChar('أ')">أ</button>
+                                <button class="key key-action" onclick="backspace()">Retour</button>
+                            </div>
+                            <!-- Ligne 4: Chiffres Persans (différents des chiffres orientaux arabes) -->
+                            <div class="keyboard-row">
+                                <button class="key" onclick="insertChar('+')">+</button>
+                                <button class="key" onclick="insertChar('-')">-</button>
+                                <button class="key" onclick="insertChar('۰')">٠</button>
+                                <button class="key" onclick="insertChar('۹')">٩</button>
+                                <button class="key" onclick="insertChar('۸')">٨</button>
+                                <button class="key" onclick="insertChar('۷')">٧</button>
+                                <button class="key" onclick="insertChar('۶')">۶</button> <!-- 6 Persan -->
+                                <button class="key" onclick="insertChar('۵')">۵</button> <!-- 5 Persan -->
+                                <button class="key" onclick="insertChar('۴')">۴</button> <!-- 4 Persan -->
+                                <button class="key" onclick="insertChar('۳')">٣</button>
+                                <button class="key" onclick="insertChar('۲')">٢</button>
+                                <button class="key" onclick="insertChar('۱')">١</button>
+                            </div>
+                            <div class="keyboard-row space-row">
+                                <button class="key key-space" onclick="insertChar(' ')">Espace / فاصله</button>
+                            </div>
+                            <!-- Ligne 5: Harakat (Diacritiques) -->
+                            <div class="keyboard-row">
+                                <button class="key key-diacritic" onclick="insertChar('َ')" title="Zabar (Fatha)">َ</button>
+                                <button class="key key-diacritic" onclick="insertChar('ِ')" title="Zir (Kasra)">ِ</button>
+                                <button class="key key-diacritic" onclick="insertChar('ُ')" title="Pish (Damma)">ُ</button>
+                                <button class="key key-diacritic" onclick="insertChar('ً')" title="Tanvin">ً</button>
+                                <button class="key key-diacritic" onclick="insertChar('ٍ')" title="Tanvin">ٍ</button>
+                                <button class="key key-diacritic" onclick="insertChar('ٌ')" title="Tanvin">ٌ</button>
+                                <button class="key key-diacritic" onclick="insertChar('ْ')" title="Sokun">ْ</button>
+                                <button class="key key-diacritic" onclick="insertChar('ّ')" title="Tashdid (Shadda)">ّ</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contenu SEO de l'Outil -->
+                    <article class="boxed-section content-section">
+                        <h2>Le Meilleur Clavier Persan (Farsi) & Ourdou en Ligne</h2>
+                        <p>L'alphabet arabe n'est pas uniquement utilisé pour écrire la langue arabe. Des centaines de millions de personnes en Iran, en Afghanistan, au Tadjikistan et au Pakistan l'utilisent pour écrire le <strong>Persan (Farsi)</strong> et l'<strong>Ourdou</strong>. Notre clavier virtuel a été spécialement adapté pour inclure les lettres uniques de l'alphabet arabo-persan, introuvables sur un clavier arabe standard.</p>
+                        
+                        <h3>Quelles sont les 4 lettres supplémentaires du Persan?</h3>
+                        <p>La langue persane possède 32 lettres, soit 4 de plus que l'arabe classique, afin de représenter des sons (phonèmes) qui n'existent pas dans la langue du Coran:</p>
+                        <ul>
+                            <li><strong>Le son "P":</strong> La lettre <strong>پ</strong> (Pe). Elle ressemble à un Baa arabe (ب) mais avec 3 points en dessous.</li>
+                            <li><strong>Le son "CH" (Tch):</strong> La lettre <strong>چ</strong> (Che). Elle ressemble à un Jiim (ج) avec 3 points à l'intérieur.</li>
+                            <li><strong>Le son "ZH" (J):</strong> La lettre <strong>ژ</strong> (Zhe). Elle ressemble à un Zay (ز) mais avec 3 points au-dessus.</li>
+                            <li><strong>Le son "G" dur:</strong> La lettre <strong>گ</strong> (Gaf). Elle ressemble à un Kaf (ك) surmonté d'une ligne supplémentaire.</li>
+                        </ul>
+
+                        <h3>Translittération Farsi/Ourdou (Écrivez en Phonétique)</h3>
+                        <p>Tout comme notre clavier principal, ce Clavier Persan dispose d'un moteur de <strong>Translittération intelligent</strong> (Finglish vers Farsi). Activez le bouton "Translittération" en haut de la page, et tapez avec votre clavier AZERTY/QWERTY européen:</p>
+                        
+                        <div class="mapping-grid">
+                            <div class="map-item"><span class="map-ar">پ</span><span class="map-en">p</span></div>
+                            <div class="map-item"><span class="map-ar">چ</span><span class="map-en">ch</span></div>
+                            <div class="map-item"><span class="map-ar">ژ</span><span class="map-en">zh</span></div>
+                            <div class="map-item"><span class="map-ar">گ</span><span class="map-en">g</span></div>
+                            <div class="map-item"><span class="map-ar">ک</span><span class="map-en">k</span></div>
+                            <div class="map-item"><span class="map-ar">ی</span><span class="map-en">y / i</span></div>
+                        </div>
+
+                        <h3>Les particularités typographiques iraniennes</h3>
+                        <p>Si vous êtes étudiant en Farsi, faites attention à deux détails majeurs lors de votre saisie informatique:</p>
+                        <p><strong>1. Le Kaf et le Yaa Persans:</strong> L'arabe écrit le Kaf avec une hamza à l'intérieur (ك) et le Yaa avec deux points en dessous (ي). Le Persan, lui, utilise un Kaf sans hamza (ک) et un Yaa totalement nu sans points (ی). Notre clavier génère les bons codes Unicode persans.</p>
+                        <p><strong>2. Les Chiffres Iraniens:</strong> L'arabe oriental et le Persan utilisent des chiffres qui se ressemblent beaucoup, mais qui sont encodés différemment. Le chiffre "4" arabe est (٤) tandis que le "4" persan s'écrit (۴). Le "5" arabe est (٥), le persan est (۵). Le "6" arabe est (٦), le persan est (۶). La rangée de chiffres de ce clavier tape automatiquement les véritables chiffres Farsi.</p>
+
+                        <h3>Confidentialité et Vitesse</h3>
+                        <p>Que vous rédigiez un poème de Hafez, un message WhatsApp en Dari (Afghanistan) ou un texte formel en Ourdou, vous n'avez pas besoin d'installer de pack linguistique (Language Pack) sur Windows ou Mac. Ce clavier fonctionne instantanément dans votre navigateur, sans conserver vos textes sur des serveurs distants.</p>
+                        <div style="margin-top: 40px; padding-top: 25px; border-top: 2px dashed #e5e7eb;">
+                            <h3 style="font-size: 1.4rem; color: #111827; margin-bottom: 15px; margin-top: 0;">Découvrez nos outils gratuits pour l'Arabe</h3>
+                            <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 20px;">Simplifiez votre rédaction, votre apprentissage ou votre développement informatique grâce à notre suite d'outils spécialisés:</p>
+                            
+                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px;">
+                                
+                                <!-- Outils Principaux -->
+                                <a href="/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-keyboard" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Arabe Virtuel
+                                </a>
+                                <a href="/clavier-persan-farsi/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-language" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Persan & Ourdou
+                                </a>
+                                <a href="/clavier-maghrebin-darija/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-earth-africa" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Maghrébin (Darija)
+                                </a>
+                                
+                                <!-- Outils de Manipulation de Texte -->
+                                <a href="/suppresseur-harakat/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-eraser" style="color: var(--primary); width: 20px; text-align: center;"></i> Suppresseur de Harakat
+                                </a>
+                                <a href="/nettoyeur-texte/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-broom" style="color: var(--primary); width: 20px; text-align: center;"></i> Nettoyeur de Texte
+                                </a>
+                                <a href="/allongement-tatweel/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-text-width" style="color: var(--primary); width: 20px; text-align: center;"></i> Étirer Texte (Tatweel)
+                                </a>
+                                <a href="/convertisseur-ponctuation-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-question" style="color: var(--primary); width: 20px; text-align: center;"></i> Inverser la Ponctuation
+                                </a>
+                                <a href="/chercher-remplacer-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-magnifying-glass-arrow-right" style="color: var(--primary); width: 20px; text-align: center;"></i> Chercher/Remplacer (Tolérant)
+                                </a>
+                                <a href="/reparateur-texte-photoshop/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--primary); width: 20px; text-align: center;"></i> Réparateur Photoshop/Adobe
+                                </a>
+                                
+                                <!-- Outils de Données, Nombres et Programmation -->
+                                <a href="/convertisseur-chiffres-arabes/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-1" style="color: var(--primary); width: 20px; text-align: center;"></i> Chiffres (Orientaux ↔ Européens)
+                                </a>
+                                <a href="/nombres-en-lettres-tafqit/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-money-check-dollar" style="color: var(--primary); width: 20px; text-align: center;"></i> Chiffres en Lettres (Tafqit)
+                                </a>
+                                <a href="/compteur-mots-caracteres/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-calculator" style="color: var(--primary); width: 20px; text-align: center;"></i> Compteur de Mots
+                                </a>
+                                <a href="/trieur-alphabetique/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-arrow-down-a-z" style="color: var(--primary); width: 20px; text-align: center;"></i> Trieur Alphabétique Arabe
+                                </a>
+                                <a href="/analyseur-frequence-mots-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-chart-simple" style="color: var(--primary); width: 20px; text-align: center;"></i> Analyseur de Densité (SEO)
+                                </a>
+                                <a href="/extracteur-texte/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-filter" style="color: var(--primary); width: 20px; text-align: center;"></i> Extracteur de Texte Arabe
+                                </a>
+                                <a href="/encodeur-decodeur-url-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-link" style="color: var(--primary); width: 20px; text-align: center;"></i> Décodeur d'URL Arabe
+                                </a>
+                                <a href="/generateur-lorem-ipsum-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-paragraph" style="color: var(--primary); width: 20px; text-align: center;"></i> Générateur Lorem Ipsum
+                                </a>
+
+                                <!-- Outils Divers et Accessibilité -->
+                                <a href="/lecteur-texte-arabe-vocal/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-volume-high" style="color: var(--primary); width: 20px; text-align: center;"></i> Lecteur Vocal (TTS)
+                                </a>
+                                <a href="/convertisseur-arabe-braille/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-braille" style="color: var(--primary); width: 20px; text-align: center;"></i> Traducteur Arabe ➔ Braille
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                </main>
+
+                <!-- Pub Droite -->
+                <aside class="ad-sidebar right-ad"></aside>
+
+            </div>
+        </div>
+    </div>
+
+    <footer class="full-width-footer">
+        <div class="container">
+            <div class="grid-layout">
+                <div class="footer-spacer"></div>
+                <div class="footer-inner">
+                    <div class="footer-links">
+                        <a href="/privacy/">Politique de Confidentialité</a>
+                        <a href="/cookies/">Politique des Cookies</a>
+                        <a href="/terms/">Conditions d'Utilisation</a>
+                        <a href="/contact/">Contact</a>
+                    </div>
+                    <div>&copy; 2026 Clavier Arabe. Tous droits réservés.</div>
+                </div>
+                <div class="footer-spacer"></div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast">Copié dans le presse-papiers !</div>
+
+    <!-- SCRIPT DU CLAVIER PERSAN -->
+    <script>
+        const textarea = document.getElementById('area');
+        let isTransliterationActive = false;
+
+        window.onload = () => textarea.focus();
+
+        function toggleTransliteration() {
+            isTransliterationActive = !isTransliterationActive;
+            const toggleContainer = document.getElementById('transToggle');
+            const text = document.getElementById('trans-text');
+            
+            if(isTransliterationActive) {
+                toggleContainer.classList.add('active');
+                text.innerText = "Translittération (ON)";
+            } else {
+                toggleContainer.classList.remove('active');
+                text.innerText = "Translittération (OFF)";
+            }
+            textarea.focus();
+        }
+
+        function insertChar(char) {
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            let text = textarea.value;
+            
+            text = text.substring(0, start) + char + text.substring(end);
+            textarea.value = text;
+            textarea.selectionStart = textarea.selectionEnd = start + char.length;
+
+            if(isTransliterationActive) {
+                processTransliteration();
+            }
+            enforceDiacriticRules();
+            textarea.focus();
+        }
+
+        function backspace() {
+            const start = textarea.selectionStart;
+            if (start === 0) return;
+            const text = textarea.value;
+            textarea.value = text.substring(0, start - 1) + text.substring(textarea.selectionEnd);
+            textarea.selectionStart = textarea.selectionEnd = start - 1;
+            textarea.focus();
+        }
+
+        function changeFontSize(step) {
+            let currentSize = window.getComputedStyle(textarea, null).getPropertyValue('font-size');
+            let newSize = parseFloat(currentSize) + step;
+            textarea.style.fontSize = newSize + 'px';
+            textarea.focus();
+        }
+
+        function clearText() {
+            textarea.value = '';
+            textarea.focus();
+        }
+
+        function searchGoogle() {
+            if(!textarea.value.trim()) return;
+            window.open("https://www.google.fr/search?q=" + encodeURIComponent(textarea.value), "_blank");
+        }
+
+        function searchYoutube() {
+            if(!textarea.value.trim()) return;
+            window.open("https://www.youtube.com/results?search_query=" + encodeURIComponent(textarea.value), "_blank");
+        }
+
+        function copyText() {
+            textarea.select();
+            navigator.clipboard.writeText(textarea.value).then(() => {
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+                setTimeout(() => { toast.classList.remove('show'); }, 2500);
+                textarea.selectionStart = textarea.selectionEnd = textarea.value.length;
+            });
+        }
+
+        textarea.addEventListener('keyup', (e) => {
+            if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return;
+            if(isTransliterationActive) {
+                processTransliteration();
+            }
+            enforceDiacriticRules();
+        });
+
+        function processTransliteration() {
+            const cursorPosition = textarea.selectionStart;
+            let br = textarea.value;
+
+            // Translittération spécifique Farsi/Persan
+            // Les lettres additionnelles: p = پ , ch = چ , zh = ژ , g = گ
+            br = br.replace(/p/g,"پ"); br = br.replace(/P/g,"پ"); 
+            br = br.replace(/ch/g,"چ"); br = br.replace(/Ch/g,"چ"); br = br.replace(/CH/g,"چ"); 
+            br = br.replace(/zh/g,"ژ"); br = br.replace(/Zh/g,"ژ"); br = br.replace(/ZH/g,"ژ"); 
+            br = br.replace(/g/g,"گ"); br = br.replace(/G/g,"گ"); 
+            
+            // Kaf et Yaa persans
+            br = br.replace(/k/g,"ک"); br = br.replace(/K/g,"ک"); 
+            br = br.replace(/y/g,"ی"); br = br.replace(/i/g,"ی"); 
+
+            // Base de l'alphabet (similaire à l'arabe)
+            br = br.replace(/3/g,"ع"); br = br.replace(/a/g,"ا"); br = br.replace(/b/g,"ب"); 
+            br = br.replace(/t/g,"ت"); br = br.replace(/7/g,"ح"); br = br.replace(/c/g,"ث"); br = br.replace(/سس/g,"ث"); br = br.replace(/ت'/g,"ث");  
+            br = br.replace(/j/g,"ج"); br = br.replace(/ح'/g,"خ"); br = br.replace(/x/g,"خ"); br = br.replace(/5/g,"خ");
+            br = br.replace(/d/g,"د"); br = br.replace(/د'/g,"ذ"); br = br.replace(/r/g,"ر");  
+            br = br.replace(/z/g,"ز"); br = br.replace(/ر'/g,"ز"); br = br.replace(/R/g,"ز"); br = br.replace(/s/g,"س"); 
+            br = br.replace(/ثه/g,"ش"); br = br.replace(/س'/g,"ش"); br = br.replace(/sh/g,"ش");
+            br = br.replace(/S/g,"ص"); br = br.replace(/9/g,"ص"); br = br.replace(/ص'/g,"ض"); br = br.replace(/D/g,"ض"); br = br.replace(/9'/g,"ض");
+            br = br.replace(/T/g,"ط"); br = br.replace(/6/g,"ط"); br = br.replace(/ط'/g,"ظ"); br = br.replace(/Z/g,"ظ");
+            br = br.replace(/ع'/g,"غ"); br = br.replace(/gه/g,"غ"); br = br.replace(/f/g,"ف"); br = br.replace(/v/g,"ف");
+            br = br.replace(/ك'/g,"ق"); br = br.replace(/q/g,"ق"); br = br.replace(/l/g,"ل");
+            br = br.replace(/m/g,"م"); br = br.replace(/n/g,"ن"); br = br.replace(/h/g,"ه");
+            br = br.replace(/w/g,"و"); br = br.replace(/o/g,"و"); br = br.replace(/u/g,"و"); 
+            br = br.replace(/e/g,"آ"); br = br.replace(/و'/g,"ؤ"); br = br.replace(/وء/g,"ؤ"); br = br.replace(/ءي/g,"ئ"); br = br.replace(/ء#/g,"ئ"); br = br.replace(/ي'/g,"ئ");
+            br = br.replace(/#/g,"ى"); br = br.replace(/آآ/g,"ى"); br = br.replace(/اءء/g,"إ"); br = br.replace(/I/g,"إ"); br = br.replace(/A/g,"إ");
+            br = br.replace(/ءا/g,"أ"); br = br.replace(/ا'/g,"أ"); br = br.replace(/_/g,"ـ"); br = br.replace(/2/g,"ء"); br = br.replace(/-/g,"ء"); 
+            br = br.replace(/ه'/g,"ة"); br = br.replace(/H/g,"ة");
+            
+            // Harakat
+            br = br.replace(/ا=/g,"َ"); br = br.replace(/و=/g,"ُ"); br = br.replace(/ي=/g,"ِ"); br = br.replace(/ون=/g,"ٌ");
+            br = br.replace(/ين=/g,"ٍ"); br = br.replace(/ان=/g,"ً"); br = br.replace(/1/g,"أ");
+
+            textarea.value = br;
+            textarea.selectionStart = textarea.selectionEnd = cursorPosition;
+        }
+
+        // Le Farsi utilise les mêmes règles de Harakat strictes que l'Arabe
+        function enforceDiacriticRules() {
+            const cursorPosition = textarea.selectionStart;
+            const text = textarea.value;
+            const primaries = ['َ', 'ِ', 'ُ', 'ً', 'ٍ', 'ٌ', 'ْ'];
+            const shadda = 'ّ';
+            const shaddaAllowed = ['َ', 'ِ', 'ُ'];
+            let result = '';
+            let offsetModifier = 0;
+
+            for (let i = 0; i < text.length; i++) {
+                let char = text[i];
+                if (primaries.includes(char) || char === shadda) {
+                    let prev = result.slice(-1);
+                    if (char === shadda) {
+                        if (prev === shadda) { if (i < cursorPosition) offsetModifier--; continue; }
+                        if (primaries.includes(prev)) {
+                            if (shaddaAllowed.includes(prev)) { result = result.slice(0, -1) + shadda + prev; } 
+                            else { result = result.slice(0, -1) + shadda; if (i < cursorPosition) offsetModifier--; }
+                        } else { result += char; }
+                    } else if (primaries.includes(char)) {
+                        if (primaries.includes(prev)) { result = result.slice(0, -1) + char; if (i < cursorPosition) offsetModifier--; } 
+                        else if (prev === shadda && !shaddaAllowed.includes(char)) { result = result.slice(0, -1) + char; if (i < cursorPosition) offsetModifier--; } 
+                        else { result += char; }
+                    }
+                } else { result += char; }
+            }
+
+            if (text !== result) {
+                textarea.value = result;
+                let newCursor = Math.max(0, cursorPosition + offsetModifier);
+                textarea.selectionStart = textarea.selectionEnd = newCursor;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encoder et Décoder URL Arabe | Rendre les Liens Lisibles</title>
+    <meta name="description" content="Convertissez instantanément vos liens illisibles (%D8%A7%D8%B1...) en URL avec des lettres arabes claires. Encodez ou décodez vos liens web gratuitement.">
+    <meta name="keywords" content="decoder url arabe, encoder lien arabe, url decoder arabic, %d8, lien illisible arabe, URL encode arabic, lire url arabe">
+    <meta name="author" content="Clavier Arabe">
+    <link rel="canonical" href="https://clavier-arabe.github.io/encodeur-decodeur-url-arabe/">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://clavier-arabe.github.io/encodeur-decodeur-url-arabe/">
+    <meta property="og:title" content="Encodeur / Décodeur d'URL Arabe">
+    <meta property="og:description" content="Traduisez les liens web contenant des symboles %D8 en véritables lettres arabes lisibles.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .tool-header h1 { font-size: 1.8rem; color: #111827; margin-bottom: 8px; }
+        .tool-header p { color: var(--text-muted); font-size: 1rem; margin-bottom: 25px; }
+        
+        .tool-actions {
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 15px;
+        }
+
+        /* Panneau de sélection du mode */
+        .options-panel {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            color: #374151;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+            padding: 10px 15px;
+            background: var(--bg-surface);
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            transition: 0.2s;
+        }
+
+        .radio-label:hover {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+        
+        .radio-label input[type="radio"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        /* Layout spécifique (Haut/Bas) pour cet outil */
+        .vertical-editor { display: flex; flex-direction: column; gap: 15px; margin-bottom: 15px; }
+        .vertical-editor label { display: block; font-weight: 600; margin-bottom: 8px; color: #374151; font-family: 'Inter', sans-serif; }
+        
+        .split-textarea {
+            width: 100%; height: 120px; padding: 15px; font-size: 18px; border: 2px solid #d1d5db; 
+            border-radius: 8px; font-family: 'Inter', sans-serif; resize: vertical; outline: none; 
+            transition: 0.3s; background: #fdfdfd; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+            word-break: break-all;
+        }
+        
+        /* Les URLs peuvent contenir de l'arabe (RTL) ou de l'anglais (LTR). On force le LTR pour les URL car la structure "https://" est occidentale. */
+        #inputBox, #outputBox { direction: ltr; text-align: left; }
+        #outputBox { background: #f3f4f6; color: var(--primary); font-weight: 600; }
+        
+        .split-textarea:focus { border-color: var(--primary); }
+
+        .content-section a:hover {
+            border-color: var(--primary) !important;
+            background: #eff6ff !important;
+            color: var(--primary) !important;
+            text-decoration: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .split-textarea { height: 100px; font-size: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="full-width-header">
+        <div class="container">
+            <div class="grid-layout">
+                <div class="header-spacer"></div>
+                <div class="header-inner">
+                    <a href="/" class="logo"><span>Clavier Arabe</span> <span class="tiny"><i class="fa-solid fa-keyboard"></i></span></a>
+                    <a href="/" class="btn"><i class="fa-solid fa-keyboard"></i> Retour au Clavier</a>
+                </div>
+                <div class="header-spacer"></div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-content-area">
+        <div class="container">
+            <div class="grid-layout">
+                
+                <!-- Pub Gauche -->
+                <aside class="ad-sidebar left-ad"></aside>
+
+                <main class="main-panel">
+                    
+                    <!-- L'Outil -->
+                    <div class="boxed-section editor-card">
+                        <div class="tool-header">
+                            <h1>Décodeur / Encodeur d'URL Arabe</h1>
+                            <p>Rendez vos liens internet contenant des mots arabes à nouveau lisibles (Décodage) ou préparez-les pour les intégrer dans du code (Encodage).</p>
+                        </div>
+
+                        <!-- Mode d'Action -->
+                        <div class="options-panel">
+                            <label class="radio-label">
+                                <input type="radio" name="actionMode" value="decode" checked onchange="processURL()">
+                                <i class="fa-solid fa-unlock"></i> Décoder (Rendre le lien lisible)
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="actionMode" value="encode" onchange="processURL()">
+                                <i class="fa-solid fa-lock"></i> Encoder (Convertir l'arabe en %D8...)
+                            </label>
+                        </div>
+
+                        <div class="vertical-editor">
+                            <div>
+                                <label id="inputLabel" for="inputBox">1. Lien illisible (URL Encodée):</label>
+                                <textarea id="inputBox" class="split-textarea" placeholder="Collez l'URL ici (ex: https://ar.wikipedia.org/wiki/%D9%85%D8%B5%D8%B1)..." oninput="processURL()"></textarea>
+                            </div>
+                            <div>
+                                <label id="outputLabel" for="outputBox">2. Lien Arabe clair (URL Décodée):</label>
+                                <textarea id="outputBox" class="split-textarea" placeholder="Le résultat apparaîtra ici..." readonly></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="tool-actions">
+                            <div class="toolbar-group">
+                                <button class="btn btn-primary" onclick="copyResult()">
+                                    <i class="fa-regular fa-copy"></i> Copier l'URL
+                                </button>
+                                <a id="testLink" href="#" target="_blank" class="btn" style="display: none; background: #e0f2fe; color: #1e40af; border-color: #bae6fd;">
+                                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Tester le lien
+                                </a>
+                            </div>
+                            <div class="toolbar-group">
+                                <button class="btn btn-danger" onclick="clearText()">
+                                    <i class="fa-solid fa-trash-can"></i> Vider
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contenu SEO de l'Outil -->
+                    <article class="boxed-section content-section">
+                        <h2>Pourquoi les liens internet arabes deviennent-ils illisibles?</h2>
+                        <p>Si vous avez déjà copié l'adresse d'un article Wikipédia en arabe ou le lien d'une vidéo YouTube avec un titre en arabe pour l'envoyer sur WhatsApp ou Facebook, vous avez remarqué qu'un lien court comme <code>domaine.com/مرحبا</code> se transforme en une ligne extrêmement longue ressemblant à <code>domaine.com/%D9%85%D8%B1%D8%AD%D8%A8%D8%A7</code>.</p>
+                        
+                        <h3>Le système d'Encodage d'URL (Percent-encoding)</h3>
+                        <p>L'architecture originelle d'Internet (créée dans les années 1990) a défini que les URLs (les liens web) ne pouvaient contenir qu'un jeu très restreint de caractères occidentaux: les lettres de l'alphabet latin (A-Z, a-z), les chiffres (0-9) et quelques symboles spécifiques (-, _, ., ~).</p>
+                        <p>Les caractères de l'alphabet arabe, cyrillique, ou asiatique n'étant pas autorisés, les navigateurs internet (Chrome, Safari) appliquent un processus appelé <strong>"URL Encoding"</strong>. Chaque lettre arabe est convertie en une séquence de codes hexadécimaux précédés du symbole pourcentage (<code>%</code>). Par exemple, la lettre arabe <strong>م</strong> devient systématiquement <code>%D9%85</code>.</p>
+
+                        <h3>Comment utiliser notre outil?</h3>
+                        <p>Cet outil gère les deux sens de conversion, instantanément et localement dans votre navigateur:</p>
+                        
+                        <h4>1. Décoder (Rendre l'URL lisible)</h4>
+                        <p>Sélectionnez <strong>"Décoder"</strong>. Collez votre lien illisible rempli de pourcentages. L'outil va traduire les codes informatiques et révéler les véritables mots arabes. Vous pouvez ensuite copier ce lien "propre" pour le partager visuellement dans un article de blog, sur X (Twitter) ou dans un document de recherche afin qu'il soit esthétique.</p>
+                        
+                        <h4>2. Encoder (Sécuriser l'URL)</h4>
+                        <p>Si vous êtes développeur web, référenceur (SEO) ou programmeur (PHP, Python), et que vous devez insérer un lien arabe dans le code source d'une application ou d'une base de données, vous ne devez jamais laisser les lettres arabes brutes. Sélectionnez <strong>"Encoder"</strong>. L'outil sécurisera le texte arabe en code pourcentage (Percent-encoding) pour éviter tout bug serveur (erreurs 404).</p>
+
+                        <h3>Astuce de test</h3>
+                        <p>Dès que vous décodez ou encodez un lien valide commençant par <code>http://</code> ou <code>https://</code>, un bouton bleu <strong>"Tester le lien"</strong> apparaîtra. Vous pourrez cliquer dessus pour vérifier instantanément si le lien généré mène toujours à la bonne page web.</p>
+                        <div style="margin-top: 40px; padding-top: 25px; border-top: 2px dashed #e5e7eb;">
+                            <h3 style="font-size: 1.4rem; color: #111827; margin-bottom: 15px; margin-top: 0;">Découvrez nos outils gratuits pour l'Arabe</h3>
+                            <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 20px;">Simplifiez votre rédaction, votre apprentissage ou votre développement informatique grâce à notre suite d'outils spécialisés:</p>
+                            
+                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px;">
+                                
+                                <!-- Outils Principaux -->
+                                <a href="/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-keyboard" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Arabe Virtuel
+                                </a>
+                                <a href="/clavier-persan-farsi/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-language" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Persan & Ourdou
+                                </a>
+                                <a href="/clavier-maghrebin-darija/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-earth-africa" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Maghrébin (Darija)
+                                </a>
+                                
+                                <!-- Outils de Manipulation de Texte -->
+                                <a href="/suppresseur-harakat/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-eraser" style="color: var(--primary); width: 20px; text-align: center;"></i> Suppresseur de Harakat
+                                </a>
+                                <a href="/nettoyeur-texte/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-broom" style="color: var(--primary); width: 20px; text-align: center;"></i> Nettoyeur de Texte
+                                </a>
+                                <a href="/allongement-tatweel/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-text-width" style="color: var(--primary); width: 20px; text-align: center;"></i> Étirer Texte (Tatweel)
+                                </a>
+                                <a href="/convertisseur-ponctuation-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-question" style="color: var(--primary); width: 20px; text-align: center;"></i> Inverser la Ponctuation
+                                </a>
+                                <a href="/chercher-remplacer-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-magnifying-glass-arrow-right" style="color: var(--primary); width: 20px; text-align: center;"></i> Chercher/Remplacer (Tolérant)
+                                </a>
+                                <a href="/reparateur-texte-photoshop/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--primary); width: 20px; text-align: center;"></i> Réparateur Photoshop/Adobe
+                                </a>
+                                
+                                <!-- Outils de Données, Nombres et Programmation -->
+                                <a href="/convertisseur-chiffres-arabes/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-1" style="color: var(--primary); width: 20px; text-align: center;"></i> Chiffres (Orientaux ↔ Européens)
+                                </a>
+                                <a href="/nombres-en-lettres-tafqit/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-money-check-dollar" style="color: var(--primary); width: 20px; text-align: center;"></i> Chiffres en Lettres (Tafqit)
+                                </a>
+                                <a href="/compteur-mots-caracteres/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-calculator" style="color: var(--primary); width: 20px; text-align: center;"></i> Compteur de Mots
+                                </a>
+                                <a href="/trieur-alphabetique/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-arrow-down-a-z" style="color: var(--primary); width: 20px; text-align: center;"></i> Trieur Alphabétique Arabe
+                                </a>
+                                <a href="/analyseur-frequence-mots-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-chart-simple" style="color: var(--primary); width: 20px; text-align: center;"></i> Analyseur de Densité (SEO)
+                                </a>
+                                <a href="/extracteur-texte/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-filter" style="color: var(--primary); width: 20px; text-align: center;"></i> Extracteur de Texte Arabe
+                                </a>
+                                <a href="/encodeur-decodeur-url-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-link" style="color: var(--primary); width: 20px; text-align: center;"></i> Décodeur d'URL Arabe
+                                </a>
+                                <a href="/generateur-lorem-ipsum-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-paragraph" style="color: var(--primary); width: 20px; text-align: center;"></i> Générateur Lorem Ipsum
+                                </a>
+
+                                <!-- Outils Divers et Accessibilité -->
+                                <a href="/lecteur-texte-arabe-vocal/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-volume-high" style="color: var(--primary); width: 20px; text-align: center;"></i> Lecteur Vocal (TTS)
+                                </a>
+                                <a href="/convertisseur-arabe-braille/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-braille" style="color: var(--primary); width: 20px; text-align: center;"></i> Traducteur Arabe ➔ Braille
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                </main>
+
+                <!-- Pub Droite -->
+                <aside class="ad-sidebar right-ad"></aside>
+
+            </div>
+        </div>
+    </div>
+
+    <footer class="full-width-footer">
+        <div class="container">
+            <div class="grid-layout">
+                <div class="footer-spacer"></div>
+                <div class="footer-inner">
+                    <div class="footer-links">
+                        <a href="/privacy/">Politique de Confidentialité</a>
+                        <a href="/cookies/">Politique des Cookies</a>
+                        <a href="/terms/">Conditions d'Utilisation</a>
+                        <a href="/contact/">Contact</a>
+                    </div>
+                    <div>&copy; 2026 Clavier Arabe. Tous droits réservés.</div>
+                </div>
+                <div class="footer-spacer"></div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast">Action réussie !</div>
+
+    <!-- SCRIPT URL ENCODER/DECODER -->
+    <script>
+        function processURL() {
+            const input = document.getElementById('inputBox').value.trim();
+            const outputBox = document.getElementById('outputBox');
+            const testLinkBtn = document.getElementById('testLink');
+            const action = document.querySelector('input[name="actionMode"]:checked').value;
+            
+            // Mise à jour des labels (UI)
+            const inputLabel = document.getElementById('inputLabel');
+            const outputLabel = document.getElementById('outputLabel');
+            
+            if (action === 'decode') {
+                inputLabel.innerText = "1. Lien illisible (URL Encodée):";
+                outputLabel.innerText = "2. Lien Arabe clair (URL Décodée):";
+            } else {
+                inputLabel.innerText = "1. Lien Arabe clair (URL Décodée):";
+                outputLabel.innerText = "2. Lien sécurisé (URL Encodée):";
+            }
+
+            if (!input) {
+                outputBox.value = '';
+                testLinkBtn.style.display = 'none';
+                return;
+            }
+
+            try {
+                let result = '';
+                if (action === 'decode') {
+                    // decodeURI décode tout, sauf les caractères réservés (?, &, =). Parfait pour les URLs.
+                    // decodeURIComponent décode absolument tout, utile si l'URL est totalement masquée.
+                    // On utilise decodeURI par sécurité, mais avec un fallback (si mal formé).
+                    result = decodeURI(input);
+                } else {
+                    // encodeURI encode l'arabe mais laisse les: // et / tranquilles (ne casse pas la structure du lien).
+                    result = encodeURI(input);
+                }
+                
+                outputBox.value = result;
+
+                // Afficher le bouton de test si le résultat est une vraie URL web
+                if (result.startsWith('http://') || result.startsWith('https://')) {
+                    testLinkBtn.href = result;
+                    testLinkBtn.style.display = 'flex'; // Use flex to maintain the icon/text alignment
+                } else {
+                    testLinkBtn.style.display = 'none';
+                }
+                
+            } catch (e) {
+                // Intercepter l'erreur URIError si l'utilisateur colle un texte avec un symbole "%" non valide
+                outputBox.value = "Erreur: Le texte fourni ne semble pas être une URL encodée valide.";
+                testLinkBtn.style.display = 'none';
+            }
+        }
+
+        function clearText() {
+            document.getElementById('inputBox').value = '';
+            document.getElementById('outputBox').value = '';
+            document.getElementById('testLink').style.display = 'none';
+            document.getElementById('inputBox').focus();
+        }
+
+        function copyResult() {
+            const outputBox = document.getElementById('outputBox');
+            if (!outputBox.value.trim() || outputBox.value.startsWith('Erreur')) return;
+            
+            outputBox.select();
+            navigator.clipboard.writeText(outputBox.value).then(() => {
+                showToast("URL copiée avec succès !");
+            });
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 2500);
+        }
+    </script>
+</body>
+</html>

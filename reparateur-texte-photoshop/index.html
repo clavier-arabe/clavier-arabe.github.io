@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réparateur Texte Arabe pour Photoshop & Premiere Pro</title>
+    <meta name="description" content="Corrigez instantanément l'arabe inversé et les lettres détachées (séparées) dans Photoshop, Illustrator, Premiere Pro et After Effects. Outil gratuit.">
+    <meta name="keywords" content="arabe photoshop, corriger arabe illustrator, texte inversé adobe, lettres arabes détachées, réparer arabe premiere pro, arabic text fixer">
+    <meta name="author" content="Clavier Arabe">
+    <link rel="canonical" href="https://clavier-arabe.github.io/reparateur-texte-photoshop/">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://clavier-arabe.github.io/reparateur-texte-photoshop/">
+    <meta property="og:title" content="Réparateur de Texte Arabe pour Adobe (Photoshop, Premiere)">
+    <meta property="og:description" content="Corrigez le problème des lettres arabes séparées et inversées dans vos logiciels de montage et de graphisme.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .tool-header h1 { font-size: 1.8rem; color: #111827; margin-bottom: 8px; }
+        .tool-header p { color: var(--text-muted); font-size: 1rem; margin-bottom: 25px; }
+        
+        .tool-actions {
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 15px; padding-top: 10px; border-top: 1px solid #e5e7eb;
+        }
+
+        /* Layout spécifique à 2 écrans (Avant/Après) pour cet outil */
+        .split-editor { display: flex; gap: 20px; margin-bottom: 15px; flex-wrap: wrap; }
+        .split-editor > div { flex: 1; min-width: 250px; }
+        .split-editor label { display: block; font-weight: 600; margin-bottom: 8px; color: #374151; font-family: 'Inter', sans-serif; }
+        
+        .split-textarea {
+            width: 100%; height: 180px; padding: 12px; font-size: 24px; border: 2px solid #d1d5db; 
+            border-radius: 8px; font-family: 'Amiri', serif; resize: vertical; outline: none; 
+            transition: 0.3s; background: #fdfdfd; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+        }
+        #inputBox { direction: rtl; }
+        /* La boîte de résultat (Photoshop) est intentionnellement LTR (gauche à droite) car elle contient le texte inversé */
+        #outputBox { direction: ltr; background: #f3f4f6; color: var(--primary); }
+        .split-textarea:focus { border-color: var(--primary); }
+
+        .content-section a:hover {
+            border-color: var(--primary) !important;
+            background: #eff6ff !important;
+            color: var(--primary) !important;
+            text-decoration: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .split-editor { flex-direction: column; gap: 10px; }
+            .split-textarea { height: 120px; font-size: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="full-width-header">
+        <div class="container">
+            <div class="grid-layout">
+                <div class="header-spacer"></div>
+                <div class="header-inner">
+                    <a href="/" class="logo"><span>Clavier Arabe</span> <span class="tiny"><i class="fa-solid fa-keyboard"></i></span></a>
+                    <a href="/" class="btn"><i class="fa-solid fa-keyboard"></i> Retour au Clavier</a>
+                </div>
+                <div class="header-spacer"></div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-content-area">
+        <div class="container">
+            <div class="grid-layout">
+                
+                <!-- Pub Gauche -->
+                <aside class="ad-sidebar left-ad"></aside>
+
+                <main class="main-panel">
+                    
+                    <!-- L'Outil -->
+                    <div class="boxed-section editor-card">
+                        <div class="tool-header">
+                            <h1>Réparateur de Texte Arabe (Photoshop & Premiere)</h1>
+                            <p>Tapez ou collez un texte arabe normalement. L'outil génèrera un code inversé et attaché que vous pourrez coller directement dans vos logiciels Adobe.</p>
+                        </div>
+
+                        <div class="split-editor">
+                            <div>
+                                <label for="inputBox">1. Texte Normal:</label>
+                                <textarea id="inputBox" class="split-textarea" placeholder="Collez le texte arabe normal ici" oninput="fixText()"></textarea>
+                            </div>
+                            <div>
+                                <label for="outputBox">2. Code pour Photoshop:</label>
+                                <textarea id="outputBox" class="split-textarea" placeholder="Le résultat apparaîtra ici" readonly></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="tool-actions">
+                            <div class="toolbar-group">
+                                <button class="btn btn-primary" onclick="copyResult()">
+                                    <i class="fa-regular fa-copy"></i> Copier pour Photoshop
+                                </button>
+                            </div>
+                            <div class="toolbar-group">
+                                <button class="btn btn-danger" onclick="clearText()">
+                                    <i class="fa-solid fa-trash-can"></i> Vider
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contenu SEO de l'Outil -->
+                    <article class="boxed-section content-section">
+                        <h2>Pourquoi les lettres arabes s'affichent-elles séparées dans Photoshop?</h2>
+                        <p>Lorsque vous copiez un texte arabe dans un logiciel graphique comme <strong>Adobe Photoshop, Illustrator, Premiere Pro ou After Effects</strong> (version standard non "Middle Eastern"), le moteur de texte du logiciel applique les règles de la langue anglaise.</p>
+                        <p>En conséquence:</p>
+                        <ul>
+                            <li>Le texte est lu de gauche à droite (LTR) au lieu de droite à gauche (RTL), ce qui inverse totalement vos phrases.</li>
+                            <li>Les lettres ne se connectent pas. Par exemple, au lieu du mot "مرحبا", le logiciel affichera "ا ب ح ر م".</li>
+                        </ul>
+
+                        <h3>Comment ce réparateur d'arabe fonctionne-t-il?</h3>
+                        <p>Cet outil résout le problème de manière mathématique grâce au standard <em>Unicode Arabic Presentation Forms</em>.</p>
+                        <p>Chaque lettre de l'alphabet arabe possède plusieurs codes Unicode selon sa position dans le mot (isolée, au début, au milieu, ou à la fin). Lorsque vous tapez un texte dans l'encadré de gauche, notre algorithme détecte la position de chaque lettre, remplace la lettre standard par sa version "figée" attachée (ex: ـحـ au lieu de ح), puis inverse l'ordre total des lettres.</p>
+                        <p>Ainsi, lorsque Photoshop force la lecture de gauche à droite, l'inversion que nous avons appliquée remet le mot dans le bon sens, et les codes figés forcent les lettres à rester attachées !</p>
+
+                        <h3>Étapes d'utilisation pour Premiere Pro & Illustrator:</h3>
+                        <ol>
+                            <li>Écrivez ou collez votre phrase arabe correcte dans l'encadré "1. Texte Normal".</li>
+                            <li>L'outil va générer un charabia à l'envers dans l'encadré "2. Code pour Photoshop".</li>
+                            <li>Cliquez sur le bouton bleu <strong>Copier pour Photoshop</strong>.</li>
+                            <li>Ouvrez l'outil Texte (T) dans votre logiciel Adobe, et faites <code>Ctrl + V</code> (ou <code>Cmd + V</code> sur Mac).</li>
+                            <li>Magie ! Le texte s'affichera parfaitement attaché et dans le bon sens.</li>
+                        </ol>
+
+                        <h3>Comment configurer Photoshop définitivement?</h3>
+                        <p>Si vous utilisez Photoshop CC très souvent pour l'arabe, vous pouvez configurer le logiciel de façon native (ce qui rendra cet outil inutile pour vous):</p>
+                        <p>Allez dans <em>Édition > Préférences > Texte</em> (ou <em>Photoshop > Réglages > Texte</em> sur Mac). Changez le moteur de texte de "Latin et Asie de l'Est" à <strong>"Moyen-Orient" (World-Ready Layout)</strong>. Redémarrez Photoshop, puis allez dans le menu "Paragraphe" et activez la direction de "Droite à Gauche".</p>
+                        <p>Cependant, si vous montez une vidéo rapidement sur un Premiere Pro d'emprunt, notre outil reste la solution la plus rapide !</p>
+                        <div style="margin-top: 40px; padding-top: 25px; border-top: 2px dashed #e5e7eb;">
+                            <h3 style="font-size: 1.4rem; color: #111827; margin-bottom: 15px; margin-top: 0;">Découvrez nos outils gratuits pour l'Arabe</h3>
+                            <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 20px;">Simplifiez votre rédaction, votre apprentissage ou votre développement informatique grâce à notre suite d'outils spécialisés:</p>
+                            
+                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px;">
+                                
+                                <!-- Outils Principaux -->
+                                <a href="/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-keyboard" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Arabe Virtuel
+                                </a>
+                                <a href="/clavier-persan-farsi/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-language" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Persan & Ourdou
+                                </a>
+                                <a href="/clavier-maghrebin-darija/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-earth-africa" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Maghrébin (Darija)
+                                </a>
+                                
+                                <!-- Outils de Manipulation de Texte -->
+                                <a href="/suppresseur-harakat/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-eraser" style="color: var(--primary); width: 20px; text-align: center;"></i> Suppresseur de Harakat
+                                </a>
+                                <a href="/nettoyeur-texte/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-broom" style="color: var(--primary); width: 20px; text-align: center;"></i> Nettoyeur de Texte
+                                </a>
+                                <a href="/allongement-tatweel/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-text-width" style="color: var(--primary); width: 20px; text-align: center;"></i> Étirer Texte (Tatweel)
+                                </a>
+                                <a href="/convertisseur-ponctuation-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-question" style="color: var(--primary); width: 20px; text-align: center;"></i> Inverser la Ponctuation
+                                </a>
+                                <a href="/chercher-remplacer-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-magnifying-glass-arrow-right" style="color: var(--primary); width: 20px; text-align: center;"></i> Chercher/Remplacer (Tolérant)
+                                </a>
+                                <a href="/reparateur-texte-photoshop/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--primary); width: 20px; text-align: center;"></i> Réparateur Photoshop/Adobe
+                                </a>
+                                
+                                <!-- Outils de Données, Nombres et Programmation -->
+                                <a href="/convertisseur-chiffres-arabes/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-1" style="color: var(--primary); width: 20px; text-align: center;"></i> Chiffres (Orientaux ↔ Européens)
+                                </a>
+                                <a href="/nombres-en-lettres-tafqit/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-money-check-dollar" style="color: var(--primary); width: 20px; text-align: center;"></i> Chiffres en Lettres (Tafqit)
+                                </a>
+                                <a href="/compteur-mots-caracteres/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-calculator" style="color: var(--primary); width: 20px; text-align: center;"></i> Compteur de Mots
+                                </a>
+                                <a href="/trieur-alphabetique/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-arrow-down-a-z" style="color: var(--primary); width: 20px; text-align: center;"></i> Trieur Alphabétique Arabe
+                                </a>
+                                <a href="/analyseur-frequence-mots-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-chart-simple" style="color: var(--primary); width: 20px; text-align: center;"></i> Analyseur de Densité (SEO)
+                                </a>
+                                <a href="/extracteur-texte/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-filter" style="color: var(--primary); width: 20px; text-align: center;"></i> Extracteur de Texte Arabe
+                                </a>
+                                <a href="/encodeur-decodeur-url-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-link" style="color: var(--primary); width: 20px; text-align: center;"></i> Décodeur d'URL Arabe
+                                </a>
+                                <a href="/generateur-lorem-ipsum-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-paragraph" style="color: var(--primary); width: 20px; text-align: center;"></i> Générateur Lorem Ipsum
+                                </a>
+
+                                <!-- Outils Divers et Accessibilité -->
+                                <a href="/lecteur-texte-arabe-vocal/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-volume-high" style="color: var(--primary); width: 20px; text-align: center;"></i> Lecteur Vocal (TTS)
+                                </a>
+                                <a href="/convertisseur-arabe-braille/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-braille" style="color: var(--primary); width: 20px; text-align: center;"></i> Traducteur Arabe ➔ Braille
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                </main>
+
+                <!-- Pub Droite -->
+                <aside class="ad-sidebar right-ad"></aside>
+
+            </div>
+        </div>
+    </div>
+
+    <footer class="full-width-footer">
+        <div class="container">
+            <div class="grid-layout">
+                <div class="footer-spacer"></div>
+                <div class="footer-inner">
+                    <div class="footer-links">
+                        <a href="/privacy/">Politique de Confidentialité</a>
+                        <a href="/cookies/">Politique des Cookies</a>
+                        <a href="/terms/">Conditions d'Utilisation</a>
+                        <a href="/contact/">Contact</a>
+                    </div>
+                    <div>&copy; 2026 Clavier Arabe. Tous droits réservés.</div>
+                </div>
+                <div class="footer-spacer"></div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast">Action réussie !</div>
+
+    <!-- SCRIPT DE CORRECTION ARABE -->
+    <script>
+        // Dictionnaire Unicode de présentation Arabe
+        // Ordre: Isolée, Finale, Initiale, Médiane
+        const arabicMap = {
+            'ا': ['\uFE8D', '\uFE8E', '\uFE8D', '\uFE8E'],
+            'أ': ['\uFE83', '\uFE84', '\uFE83', '\uFE84'],
+            'إ': ['\uFE87', '\uFE88', '\uFE87', '\uFE88'],
+            'آ': ['\uFE81', '\uFE82', '\uFE81', '\uFE82'],
+            'ب': ['\uFE8F', '\uFE90', '\uFE91', '\uFE92'],
+            'ت': ['\uFE95', '\uFE96', '\uFE97', '\uFE98'],
+            'ث': ['\uFE99', '\uFE9A', '\uFE9B', '\uFE9C'],
+            'ج': ['\uFE9D', '\uFE9E', '\uFE9F', '\uFEA0'],
+            'ح': ['\uFEA1', '\uFEA2', '\uFEA3', '\uFEA4'],
+            'خ': ['\uFEA5', '\uFEA6', '\uFEA7', '\uFEA8'],
+            'د': ['\uFEA9', '\uFEAA', '\uFEA9', '\uFEAA'],
+            'ذ': ['\uFEAB', '\uFEAC', '\uFEAB', '\uFEAC'],
+            'ر': ['\uFEAD', '\uFEAE', '\uFEAD', '\uFEAE'],
+            'ز': ['\uFEAF', '\uFEB0', '\uFEAF', '\uFEB0'],
+            'س': ['\uFEB1', '\uFEB2', '\uFEB3', '\uFEB4'],
+            'ش': ['\uFEB5', '\uFEB6', '\uFEB7', '\uFEB8'],
+            'ص': ['\uFEB9', '\uFEBA', '\uFEBB', '\uFEBC'],
+            'ض': ['\uFEBD', '\uFEBE', '\uFEBF', '\uFEC0'],
+            'ط': ['\uFEC1', '\uFEC2', '\uFEC3', '\uFEC4'],
+            'ظ': ['\uFEC5', '\uFEC6', '\uFEC7', '\uFEC8'],
+            'ع': ['\uFEC9', '\uFECA', '\uFECB', '\uFECC'],
+            'غ': ['\uFECD', '\uFECE', '\uFECF', '\uFED0'],
+            'ف': ['\uFED1', '\uFED2', '\uFED3', '\uFED4'],
+            'ق': ['\uFED5', '\uFED6', '\uFED7', '\uFED8'],
+            'ك': ['\uFED9', '\uFEDA', '\uFEDB', '\uFEDC'],
+            'ل': ['\uFEDD', '\uFEDE', '\uFEDF', '\uFEE0'],
+            'م': ['\uFEE1', '\uFEE2', '\uFEE3', '\uFEE4'],
+            'ن': ['\uFEE5', '\uFEE6', '\uFEE7', '\uFEE8'],
+            'ه': ['\uFEE9', '\uFEEA', '\uFEEB', '\uFEEC'],
+            'و': ['\uFEED', '\uFEEE', '\uFEED', '\uFEEE'],
+            'ي': ['\uFEF1', '\uFEF2', '\uFEF3', '\uFEF4'],
+            'ة': ['\uFEE3', '\uFEE4', '', ''], // Ta marbuta n'a que isolé/final
+            'ى': ['\uFEEF', '\uFEF0', '\uFEEF', '\uFEF0'], // Alef maksura
+            'ئ': ['\uFE89', '\uFE8A', '\uFE8B', '\uFE8C'],
+            'ؤ': ['\uFE85', '\uFE86', '\uFE85', '\uFE86'],
+            'ء': ['\uFE80', '\uFE80', '\uFE80', '\uFE80']
+        };
+
+        // Lettres qui ne se connectent pas par la gauche
+        const nonConnectingLetters = ['ا', 'أ', 'إ', 'آ', 'د', 'ذ', 'ر', 'ز', 'و', 'ؤ', 'ء', 'ة', 'ى'];
+
+        function fixText() {
+            const input = document.getElementById('inputBox').value;
+            let result = '';
+            
+            // Étape 1: Gérer les caractères spéciaux "Lam-Alef" (La)
+            let processedInput = input.replace(/لا/g, '\uFEFB').replace(/لأ/g, '\uFEF7').replace(/لإ/g, '\uFEF9').replace(/لآ/g, '\uFEF5');
+
+            let tokens = [];
+
+            // Étape 2: Analyser chaque lettre pour lui donner la bonne forme
+            for (let i = 0; i < processedInput.length; i++) {
+                let char = processedInput[i];
+                let prevChar = i > 0 ? processedInput[i - 1] : null;
+                let nextChar = i < processedInput.length - 1 ? processedInput[i + 1] : null;
+
+                if (arabicMap[char]) {
+                    // Vérifier si connecté avant
+                    let connectBefore = prevChar && arabicMap[prevChar] && !nonConnectingLetters.includes(prevChar);
+                    // Vérifier si connecté après
+                    let connectAfter = nextChar && arabicMap[nextChar];
+
+                    if (connectBefore && connectAfter && arabicMap[char][3]) {
+                        tokens.push(arabicMap[char][3]); // Médiane
+                    } else if (connectBefore && arabicMap[char][1]) {
+                        tokens.push(arabicMap[char][1]); // Finale
+                    } else if (connectAfter && arabicMap[char][2]) {
+                        tokens.push(arabicMap[char][2]); // Initiale
+                    } else {
+                        tokens.push(arabicMap[char][0]); // Isolée
+                    }
+                } else {
+                    tokens.push(char); // Espaces, ponctuation, anglais, etc.
+                }
+            }
+
+            // Étape 3: Inverser tout le texte (L'ordre des tokens) pour Photoshop
+            document.getElementById('outputBox').value = tokens.reverse().join('');
+        }
+
+        function clearText() {
+            document.getElementById('inputBox').value = '';
+            document.getElementById('outputBox').value = '';
+            document.getElementById('inputBox').focus();
+        }
+
+        function copyResult() {
+            const outputBox = document.getElementById('outputBox');
+            if (!outputBox.value.trim()) return;
+            
+            outputBox.select();
+            navigator.clipboard.writeText(outputBox.value).then(() => {
+                showToast("Code Photoshop copié !");
+            });
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 2500);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyseur de Fréquence de Mots Arabes (Densité SEO)</title>
+    <meta name="description" content="Analysez la densité de vos mots-clés en arabe. Comptez les mots les plus utilisés dans un texte en ignorant les mots de liaison (Stop Words). Outil SEO gratuit.">
+    <meta name="keywords" content="analyseur frequence mots arabe, densite mots cles arabe, compteur mots specifiques, seo arabe, mots les plus repetes arabe, arabic word frequency">
+    <meta name="author" content="Clavier Arabe">
+    <link rel="canonical" href="https://clavier-arabe.github.io/analyseur-frequence-mots-arabe/">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://clavier-arabe.github.io/analyseur-frequence-mots-arabe/">
+    <meta property="og:title" content="Analyseur de Fréquence de Mots Arabes (SEO)">
+    <meta property="og:description" content="Trouvez les mots-clés les plus utilisés de votre article et ignorez les stop-words arabes.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .tool-header h1 { font-size: 1.8rem; color: #111827; margin-bottom: 8px; }
+        .tool-header p { color: var(--text-muted); font-size: 1rem; margin-bottom: 25px; }
+        
+        .tool-actions {
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 15px;
+        }
+
+        /* Panneau d'options */
+        .options-panel {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            color: #374151;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .checkbox-label input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        /* Dashboard de résultats (Tableau) */
+        .results-container {
+            margin-top: 25px;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+            display: none; /* Masqué par défaut jusqu'à l'analyse */
+        }
+
+        .results-header {
+            background: #f3f4f6;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            font-weight: 700;
+            color: #111827;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            direction: rtl; /* Tableau affiché de droite à gauche pour l'arabe */
+        }
+
+        .results-table th, .results-table td {
+            padding: 12px 20px;
+            text-align: right;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .results-table th {
+            background: #f9fafb;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .results-table td {
+            font-family: 'Amiri', serif;
+            font-size: 20px;
+            color: #374151;
+        }
+
+        .results-table td.count-col {
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary);
+            width: 100px;
+            direction: ltr;
+        }
+
+        .results-table tr:last-child td { border-bottom: none; }
+        .results-table tr:hover td { background: #f8fafc; }
+
+        /* Progress Bar visuelle de densité */
+        .density-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        .density-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        /* Message d'erreur ou vide */
+        .empty-state {
+            padding: 30px;
+            text-align: center;
+            color: #9ca3af;
+            font-weight: 600;
+        }
+
+        .content-section a:hover {
+            border-color: var(--primary) !important;
+            background: #eff6ff !important;
+            color: var(--primary) !important;
+            text-decoration: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .results-table th, .results-table td { padding: 10px 12px; font-size: 16px; }
+            .results-table td.count-col { font-size: 14px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="full-width-header">
+        <div class="container">
+            <div class="grid-layout">
+                <div class="header-spacer"></div>
+                <div class="header-inner">
+                    <a href="/" class="logo"><span>Clavier Arabe</span> <span class="tiny"><i class="fa-solid fa-keyboard"></i></span></a>
+                    <a href="/" class="btn"><i class="fa-solid fa-keyboard"></i> Retour au Clavier</a>
+                </div>
+                <div class="header-spacer"></div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-content-area">
+        <div class="container">
+            <div class="grid-layout">
+                
+                <!-- Pub Gauche -->
+                <aside class="ad-sidebar left-ad"></aside>
+
+                <main class="main-panel">
+                    
+                    <!-- L'Outil -->
+                    <div class="boxed-section editor-card">
+                        <div class="tool-header">
+                            <h1>Analyseur de Fréquence de Mots (Densité SEO)</h1>
+                            <p>Collez votre article en arabe. L'outil comptera l'occurrence de chaque mot pour vous aider à optimiser vos mots-clés et éviter la répétition excessive.</p>
+                        </div>
+
+                        <textarea id="toolInput" class="text-area-input tool-textarea" placeholder="Collez votre texte arabe ici" oninput="analyzeText()"></textarea>
+                        
+                        <!-- Options d'analyse -->
+                        <div class="options-panel">
+                            <label class="checkbox-label" title="Ignore les mots comme 'في', 'من', 'على' qui faussent les statistiques.">
+                                <input type="checkbox" id="ignoreStopWords" checked onchange="analyzeText()">
+                                Ignorer les mots de liaison arabes
+                            </label>
+                            <label class="checkbox-label" title="Ignore les voyelles (Harakat) pour regrouper les mots identiques (ex: مُحَمّد et محمد).">
+                                <input type="checkbox" id="ignoreHarakat" checked onchange="analyzeText()">
+                                Ignorer les Harakat (Diacritiques)
+                            </label>
+                            <label class="checkbox-label" title="Ignore les chiffres et nombres dans le classement.">
+                                <input type="checkbox" id="ignoreNumbers" checked onchange="analyzeText()">
+                                Ignorer les chiffres
+                            </label>
+                        </div>
+
+                        <div class="tool-actions">
+                            <div class="toolbar-group">
+                                <button class="btn btn-primary" onclick="analyzeText()">
+                                    <i class="fa-solid fa-chart-simple"></i> Analyser le texte
+                                </button>
+                            </div>
+                            <div class="toolbar-group">
+                                <button class="btn btn-danger" onclick="clearText()">
+                                    <i class="fa-solid fa-trash-can"></i> Vider
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Tableau des résultats -->
+                        <div class="results-container" id="resultsContainer">
+                            <div class="results-header">
+                                <span><i class="fa-solid fa-list-ol"></i> Top 20 des Mots les plus utilisés</span>
+                                <span style="font-size: 0.85rem; color: #6b7280; font-weight: 400;">Total de mots analysés: <strong id="totalWordsAnalyzed" style="color: #111827;">0</strong></span>
+                            </div>
+                            <table class="results-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 50px; text-align: center;">#</th>
+                                        <th>Mot (الكلمة)</th>
+                                        <th style="text-align: left;">Occurrences (التكرار)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="resultsBody">
+                                    <!-- Les résultats seront injectés ici par JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Contenu SEO de l'Outil -->
+                    <article class="boxed-section content-section">
+                        <h2>Qu'est-ce que l'Analyse de Fréquence de Mots (Densité SEO)?</h2>
+                        <p>Dans le domaine du référencement naturel sur Google (<strong>SEO - Search Engine Optimization</strong>), la "densité d'un mot-clé" est le pourcentage d'apparition d'un mot spécifique par rapport au nombre total de mots d'un article. C'est un indicateur crucial pour indiquer aux moteurs de recherche le sujet principal de votre page web.</p>
+
+                        <h3>Le défi de la langue Arabe pour le SEO</h3>
+                        <p>Les outils classiques de SEO (comme Yoast, RankMath ou les compteurs anglais) peinent énormément avec la langue arabe à cause de sa morphologie agglutinante et de sa ponctuation.</p>
+                        <ul>
+                            <li><strong>Le préfixe "Al" (ال):</strong> En arabe, l'article défini (Le/La) est directement collé au mot (ex: المدرسة). Si un outil compte "مدرسة" et "المدرسة" comme deux mots différents, vos statistiques de densité seront fausses. <em>(Notre outil gère le texte brut, nous vous conseillons de veiller à l'uniformité de vos mots-clés).</em></li>
+                            <li><strong>Les Stop Words:</strong> Les prépositions (في, من, على, إلى) et les conjonctions (و, أو, ثم) sont les mots les plus utilisés dans n'importe quel texte arabe. Si vous analysez un texte sans filtre, le mot "في" (Dans) sera toujours numéro 1, ce qui est inutile pour le SEO. L'option <strong>"Ignorer les Stop Words"</strong> de notre outil filtre automatiquement plus de 150 mots vides arabes pour révéler les véritables mots-clés de votre article.</li>
+                        </ul>
+
+                        <h3>Comment interpréter les résultats?</h3>
+                        <p>Collez votre texte dans l'encadré. Le tableau de bord affichera instantanément le <strong>Top 20 des mots les plus répétés</strong>, classés par ordre décroissant.</p>
+                        <p><strong>Règle d'or en rédaction Web:</strong> Si le mot-clé principal de votre article n'apparaît pas dans le Top 3 de cette liste, cela signifie que vous ne l'avez pas assez répété, et Google pourrait mal comprendre le sujet de votre page. À l'inverse, si un mot apparaît trop de fois (Keyword Stuffing), il est recommandé de le remplacer par des synonymes pour éviter une pénalité algorithmique.</p>
+                        <div style="margin-top: 40px; padding-top: 25px; border-top: 2px dashed #e5e7eb;">
+                            <h3 style="font-size: 1.4rem; color: #111827; margin-bottom: 15px; margin-top: 0;">Découvrez nos outils gratuits pour l'Arabe</h3>
+                            <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 20px;">Simplifiez votre rédaction, votre apprentissage ou votre développement informatique grâce à notre suite d'outils spécialisés:</p>
+                            
+                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px;">
+                                
+                                <!-- Outils Principaux -->
+                                <a href="/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-keyboard" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Arabe Virtuel
+                                </a>
+                                <a href="/clavier-persan-farsi/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-language" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Persan & Ourdou
+                                </a>
+                                <a href="/clavier-maghrebin-darija/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-earth-africa" style="color: var(--primary); width: 20px; text-align: center;"></i> Clavier Maghrébin (Darija)
+                                </a>
+                                
+                                <!-- Outils de Manipulation de Texte -->
+                                <a href="/suppresseur-harakat/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-eraser" style="color: var(--primary); width: 20px; text-align: center;"></i> Suppresseur de Harakat
+                                </a>
+                                <a href="/nettoyeur-texte/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-broom" style="color: var(--primary); width: 20px; text-align: center;"></i> Nettoyeur de Texte
+                                </a>
+                                <a href="/allongement-tatweel/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-text-width" style="color: var(--primary); width: 20px; text-align: center;"></i> Étirer Texte (Tatweel)
+                                </a>
+                                <a href="/convertisseur-ponctuation-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-question" style="color: var(--primary); width: 20px; text-align: center;"></i> Inverser la Ponctuation
+                                </a>
+                                <a href="/chercher-remplacer-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-magnifying-glass-arrow-right" style="color: var(--primary); width: 20px; text-align: center;"></i> Chercher/Remplacer (Tolérant)
+                                </a>
+                                <a href="/reparateur-texte-photoshop/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--primary); width: 20px; text-align: center;"></i> Réparateur Photoshop/Adobe
+                                </a>
+                                
+                                <!-- Outils de Données, Nombres et Programmation -->
+                                <a href="/convertisseur-chiffres-arabes/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-1" style="color: var(--primary); width: 20px; text-align: center;"></i> Chiffres (Orientaux ↔ Européens)
+                                </a>
+                                <a href="/nombres-en-lettres-tafqit/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-money-check-dollar" style="color: var(--primary); width: 20px; text-align: center;"></i> Chiffres en Lettres (Tafqit)
+                                </a>
+                                <a href="/compteur-mots-caracteres/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-calculator" style="color: var(--primary); width: 20px; text-align: center;"></i> Compteur de Mots
+                                </a>
+                                <a href="/trieur-alphabetique/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-arrow-down-a-z" style="color: var(--primary); width: 20px; text-align: center;"></i> Trieur Alphabétique Arabe
+                                </a>
+                                <a href="/analyseur-frequence-mots-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-chart-simple" style="color: var(--primary); width: 20px; text-align: center;"></i> Analyseur de Densité (SEO)
+                                </a>
+                                <a href="/extracteur-texte/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-filter" style="color: var(--primary); width: 20px; text-align: center;"></i> Extracteur de Texte Arabe
+                                </a>
+                                <a href="/encodeur-decodeur-url-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-link" style="color: var(--primary); width: 20px; text-align: center;"></i> Décodeur d'URL Arabe
+                                </a>
+                                <a href="/generateur-lorem-ipsum-arabe/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-paragraph" style="color: var(--primary); width: 20px; text-align: center;"></i> Générateur Lorem Ipsum
+                                </a>
+
+                                <!-- Outils Divers et Accessibilité -->
+                                <a href="/lecteur-texte-arabe-vocal/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-volume-high" style="color: var(--primary); width: 20px; text-align: center;"></i> Lecteur Vocal (TTS)
+                                </a>
+                                <a href="/convertisseur-arabe-braille/" style="display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; font-weight: 600; color: #374151; transition: 0.2s;">
+                                    <i class="fa-solid fa-braille" style="color: var(--primary); width: 20px; text-align: center;"></i> Traducteur Arabe ➔ Braille
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                </main>
+
+                <!-- Pub Droite -->
+                <aside class="ad-sidebar right-ad"></aside>
+
+            </div>
+        </div>
+    </div>
+
+    <footer class="full-width-footer">
+        <div class="container">
+            <div class="grid-layout">
+                <div class="footer-spacer"></div>
+                <div class="footer-inner">
+                    <div class="footer-links">
+                        <a href="/privacy/">Politique de Confidentialité</a>
+                        <a href="/cookies/">Politique des Cookies</a>
+                        <a href="/terms/">Conditions d'Utilisation</a>
+                        <a href="/contact/">Contact</a>
+                    </div>
+                    <div>&copy; 2026 Clavier Arabe. Tous droits réservés.</div>
+                </div>
+                <div class="footer-spacer"></div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SCRIPT DE L'ANALYSEUR DE FRÉQUENCE -->
+    <script>
+        // Dictionnaire basique des Stop Words Arabes (Prépositions, pronoms, conjonctions, verbes d'état fréquents)
+        const arabicStopWords = new Set([
+            "في", "من", "على", "إلى", "عن", "مع", "حتى", "بين", "إن", "أن", "كان", "كانت", "يكون", "تكون", 
+            "هو", "هي", "هم", "هن", "نحن", "أنا", "أنت", "أنتما", "أنتم", "هذا", "هذه", "هؤلاء", "ذلك", "تلك", 
+            "الذي", "التي", "الذين", "اللذين", "ما", "ماذا", "لماذا", "منذ", "هل", "كيف", "أين", "متى", "كم", 
+            "لا", "لم", "لن", "ليس", "ليست", "إلا", "بل", "لكن", "أو", "أم", "ثم", "كما", "وقد", "قد", "لقد", 
+            "كل", "بعض", "أي", "عند", "عندما", "قبل", "بعد", "غير", "سوى", "دون", "لدى", "إذ", "إذا", "ال",
+            "و", "ف", "ب", "ل", "ك" // Particules isolées si mal découpées
+        ]);
+
+        function analyzeText() {
+            let text = document.getElementById('toolInput').value.trim();
+            const resultsContainer = document.getElementById('resultsContainer');
+            const resultsBody = document.getElementById('resultsBody');
+            
+            if (!text) {
+                resultsContainer.style.display = 'none';
+                return;
+            }
+
+            const ignoreStopWords = document.getElementById('ignoreStopWords').checked;
+            const ignoreHarakat = document.getElementById('ignoreHarakat').checked;
+            const ignoreNumbers = document.getElementById('ignoreNumbers').checked;
+
+            // 1. Nettoyage initial: Supprimer la ponctuation (Arabe et Latine), les retours à la ligne, et symboles
+            // On remplace tout ce qui n'est pas une lettre arabe ou un chiffre par un espace.
+            text = text.replace(/[،؛؟.,!;:()\[\]{}"'«»-]/g, ' ');
+
+            // 2. Supprimer les Harakat si l'option est cochée
+            if (ignoreHarakat) {
+                text = text.replace(/[\u064B-\u065F\u0670]/g, '');
+            }
+
+            // 3. Supprimer les chiffres (Orientaux et Européens) si l'option est cochée
+            if (ignoreNumbers) {
+                text = text.replace(/[0-9\u0660-\u0669]/g, ' ');
+            }
+
+            // 4. Découper le texte en tableau de mots (séparés par n'importe quel espace blanc)
+            let wordsArray = text.split(/\s+/).filter(word => word.length > 0);
+            const totalWordsAnalyzed = wordsArray.length;
+
+            if (totalWordsAnalyzed === 0) {
+                resultsContainer.style.display = 'none';
+                return;
+            }
+
+            // 5. Comptage des occurrences (Mapping)
+            let wordCounts = {};
+            let highestCount = 0; // Pour calculer le % de la barre de progression
+
+            for (let word of wordsArray) {
+                // Filtrer les Stop Words
+                if (ignoreStopWords && arabicStopWords.has(word)) continue;
+                
+                // Ignorer les "mots" d'une seule lettre qui sont souvent des artefacts (ex: "و" détaché par erreur)
+                if (ignoreStopWords && word.length === 1 && arabicStopWords.has(word)) continue;
+
+                wordCounts[word] = (wordCounts[word] || 0) + 1;
+                if (wordCounts[word] > highestCount) {
+                    highestCount = wordCounts[word];
+                }
+            }
+
+            // 6. Convertir l'objet en tableau pour le tri
+            let sortedWords = [];
+            for (let word in wordCounts) {
+                sortedWords.push([word, wordCounts[word]]);
+            }
+
+            // Trier par ordre décroissant (Le plus fréquent en premier)
+            sortedWords.sort(function(a, b) {
+                return b[1] - a[1];
+            });
+
+            // 7. Affichage dans le tableau (Top 20 uniquement pour garder une interface propre)
+            resultsBody.innerHTML = '';
+            
+            // S'il n'y a pas de mots valides après le filtre
+            if (sortedWords.length === 0) {
+                resultsBody.innerHTML = `<tr><td colspan="3" class="empty-state">Aucun mot analysable trouvé (Vérifiez vos filtres).</td></tr>`;
+            } else {
+                let limit = Math.min(20, sortedWords.length);
+                for (let i = 0; i < limit; i++) {
+                    let word = sortedWords[i][0];
+                    let count = sortedWords[i][1];
+                    let percentage = (count / highestCount) * 100; // Largeur relative au mot le plus répété
+
+                    let tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td style="text-align: center; color: #9ca3af; font-family: 'Inter', sans-serif;">${i + 1}</td>
+                        <td>${word}</td>
+                        <td class="count-col" style="text-align: left;">
+                            ${count}
+                            <div class="density-bar"><div class="density-fill" style="width: ${percentage}%;"></div></div>
+                        </td>
+                    `;
+                    resultsBody.appendChild(tr);
+                }
+            }
+
+            document.getElementById('totalWordsAnalyzed').innerText = totalWordsAnalyzed.toLocaleString('fr-FR');
+            resultsContainer.style.display = 'block';
+        }
+
+        function clearText() {
+            document.getElementById('toolInput').value = '';
+            document.getElementById('resultsContainer').style.display = 'none';
+            document.getElementById('toolInput').focus();
+        }
+    </script>
+</body>
+</html>
